@@ -21,7 +21,7 @@ export default async function RentalsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Manage your rental transactions and track returns
+            {t('subtitle')}
           </p>
         </div>
         <Link
