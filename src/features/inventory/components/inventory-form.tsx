@@ -89,7 +89,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
             {...register('name')}
             type="text"
             id="name"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="e.g., Power Drill"
           />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
@@ -104,7 +104,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
             {...register('description')}
             id="description"
             rows={3}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="Brief description of the item..."
           />
           {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
@@ -119,7 +119,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
             <select
               {...register('category_id')}
               id="category_id"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             >
               <option value="">No category</option>
               {categories?.map((category) => (
@@ -139,7 +139,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               type="number"
               id="quantity_total"
               min="1"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
             {errors.quantity_total && <p className="mt-1 text-sm text-red-600">{errors.quantity_total.message}</p>}
           </div>
@@ -154,7 +154,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
             <select
               {...register('condition')}
               id="condition"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             >
               <option value="new">New</option>
               <option value="good">Good</option>
@@ -170,7 +170,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
             <select
               {...register('status')}
               id="status"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             >
               <option value="available">Available</option>
               <option value="rented">Rented</option>
@@ -197,7 +197,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               id="pricing.hourly"
               min="0"
               step="0.01"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="0.00"
             />
           </div>
@@ -212,7 +212,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               id="pricing.daily"
               min="0"
               step="0.01"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="0.00"
             />
           </div>
@@ -227,7 +227,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               id="pricing.weekly"
               min="0"
               step="0.01"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="0.00"
             />
           </div>
@@ -242,7 +242,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               id="pricing.monthly"
               min="0"
               step="0.01"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="0.00"
             />
           </div>
@@ -265,7 +265,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               id="deposit_required"
               min="0"
               step="0.01"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="0.00"
             />
           </div>
@@ -279,7 +279,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               type="number"
               id="minimum_rental_period"
               min="1"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
 
@@ -293,7 +293,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               id="purchase_cost"
               min="0"
               step="0.01"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="0.00"
             />
           </div>
@@ -306,7 +306,7 @@ export function InventoryForm({ initialData, itemId, mode = 'create' }: Inventor
               {...register('purchase_date')}
               type="date"
               id="purchase_date"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
         </div>

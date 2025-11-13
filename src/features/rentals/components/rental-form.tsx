@@ -155,7 +155,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
           <select
             {...register('customer_id')}
             id="customer_id"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
           >
             <option value="">Select a customer</option>
             {customers?.map((customer) => (
@@ -179,7 +179,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
               {...register('start_date')}
               type="date"
               id="start_date"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
             {errors.start_date && (
               <p className="mt-1 text-sm text-red-600">{errors.start_date.message}</p>
@@ -194,7 +194,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
               {...register('end_date')}
               type="date"
               id="end_date"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
             {errors.end_date && (
               <p className="mt-1 text-sm text-red-600">{errors.end_date.message}</p>
@@ -211,7 +211,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
             <select
               {...register('status')}
               id="status"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             >
               <option value={RENTAL_STATUSES.DRAFT}>Draft</option>
               <option value={RENTAL_STATUSES.UPCOMING}>Upcoming</option>
@@ -229,7 +229,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
               id="deposit_amount"
               min="0"
               step="0.01"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
         </div>
@@ -243,7 +243,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
             {...register('notes')}
             id="notes"
             rows={3}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="Any additional notes..."
           />
         </div>
@@ -287,7 +287,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
                 <select
                   {...register(`items.${index}.inventory_item_id`)}
                   onChange={(e) => handleItemChange(index, e.target.value)}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                 >
                   <option value="">Select an item</option>
                   {inventoryItems?.filter((item) => item.status === 'available')
@@ -312,7 +312,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
                     {...register(`items.${index}.quantity`, { valueAsNumber: true })}
                     type="number"
                     min="1"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                   />
                 </div>
 
@@ -320,7 +320,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
                   <label className="block text-sm font-medium text-gray-700">Rate Type</label>
                   <select
                     {...register(`items.${index}.rate_type`)}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                   >
                     <option value="hourly">Hourly</option>
                     <option value="daily">Daily</option>
@@ -336,7 +336,7 @@ export function RentalForm({ initialData, rentalId, mode = 'create' }: RentalFor
                     type="number"
                     min="0"
                     step="0.01"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                   />
                 </div>
               </div>

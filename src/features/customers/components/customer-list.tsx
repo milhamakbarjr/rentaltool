@@ -48,7 +48,7 @@ export function CustomerList() {
             placeholder="Search customers by name, email, or phone..."
             value={filters.search || ''}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
           />
         </div>
 
@@ -58,7 +58,7 @@ export function CustomerList() {
             <select
               value={filters.tag || ''}
               onChange={(e) => setFilters({ ...filters, tag: e.target.value })}
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             >
               <option value="">All tags</option>
               {tags.map((tag) => (
@@ -81,7 +81,7 @@ export function CustomerList() {
               ]
               setFilters({ ...filters, sort_by, sort_order })
             }}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
           >
             <option value="created_at-desc">Newest first</option>
             <option value="created_at-asc">Oldest first</option>

@@ -87,7 +87,7 @@ export function ProcessReturnForm({ rentalId, rental, onCancel }: ProcessReturnF
             {...register('return_date')}
             type="date"
             id="return_date"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
           />
           {errors.return_date && (
             <p className="mt-1 text-sm text-red-600">{errors.return_date.message}</p>
@@ -129,7 +129,7 @@ export function ProcessReturnForm({ rentalId, rental, onCancel }: ProcessReturnF
                   </label>
                   <select
                     {...register(`items.${index}.condition_after`)}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                   >
                     <option value="new">New</option>
                     <option value="good">Good</option>
@@ -146,7 +146,7 @@ export function ProcessReturnForm({ rentalId, rental, onCancel }: ProcessReturnF
                   <textarea
                     {...register(`items.${index}.notes`)}
                     rows={2}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                     placeholder="Describe any damage or issues..."
                   />
                 </div>
@@ -166,7 +166,7 @@ export function ProcessReturnForm({ rentalId, rental, onCancel }: ProcessReturnF
             id="additional_charges"
             min="0"
             step="0.01"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="0.00"
           />
           <p className="mt-1 text-sm text-gray-500">
@@ -183,7 +183,7 @@ export function ProcessReturnForm({ rentalId, rental, onCancel }: ProcessReturnF
             {...register('notes')}
             id="notes"
             rows={3}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="Any additional notes about the return..."
           />
         </div>

@@ -50,7 +50,7 @@ export function InventoryList() {
             placeholder="Search inventory..."
             value={filters.search || ''}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
           />
         </div>
 
@@ -58,7 +58,7 @@ export function InventoryList() {
         <select
           value={filters.category_id || ''}
           onChange={(e) => setFilters({ ...filters, category_id: e.target.value || undefined })}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
         >
           <option value="">All Categories</option>
           {categories?.map((category) => (
@@ -72,7 +72,7 @@ export function InventoryList() {
         <select
           value={filters.status || ''}
           onChange={(e) => setFilters({ ...filters, status: e.target.value as any })}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
         >
           <option value="">All Status</option>
           <option value="available">Available</option>

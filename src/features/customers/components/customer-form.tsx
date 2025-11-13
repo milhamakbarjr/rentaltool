@@ -106,7 +106,7 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
             {...register('name')}
             type="text"
             id="name"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="e.g., John Doe"
           />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
@@ -122,7 +122,7 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
               {...register('email')}
               type="email"
               id="email"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="john@example.com"
             />
             {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
@@ -136,7 +136,7 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
               {...register('phone')}
               type="tel"
               id="phone"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="+65 1234 5678"
             />
             {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
@@ -152,7 +152,7 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
             {...register('address')}
             id="address"
             rows={3}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="Customer's address..."
           />
           {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>}
@@ -175,7 +175,7 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="block flex-1 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="block flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               placeholder="e.g., VIP, Regular"
             />
             <button
@@ -229,7 +229,7 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
             {...register('notes')}
             id="notes"
             rows={4}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             placeholder="Any additional notes about this customer..."
           />
           {errors.notes && <p className="mt-1 text-sm text-red-600">{errors.notes.message}</p>}
