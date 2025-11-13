@@ -5,19 +5,21 @@
  */
 
 import { requireAuth } from '@/lib/auth/guards'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { ROUTES } from '@/utils/constants'
 import { CustomerList } from '@/features/customers/components/customer-list'
 
 export default async function CustomersPage() {
   await requireAuth()
+  const t = await getTranslations('customers')
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
           <p className="mt-1 text-sm text-gray-600">
             Manage your customer database and rental history
           </p>
@@ -39,7 +41,7 @@ export default async function CustomersPage() {
               d="M12 4v16m8-8H4"
             />
           </svg>
-          Add Customer
+          {t('addCustomer')}
         </Link>
       </div>
 
