@@ -18,9 +18,10 @@ export const ROUTES = {
   ANALYTICS: '/analytics',
   PAYMENTS: '/payments',
   SETTINGS: '/settings',
-  LOGIN: '/auth/login',
-  REGISTER: '/auth/register',
-  RESET_PASSWORD: '/auth/reset-password',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  RESET_PASSWORD: '/reset-password',
+  AUTH_CALLBACK: '/auth/callback',
 } as const
 
 // Rental Statuses

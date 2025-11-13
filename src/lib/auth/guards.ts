@@ -6,6 +6,7 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ROUTES } from '@/utils/constants'
 
 /**
  * Require authenticated user
@@ -17,7 +18,7 @@ export async function requireAuth() {
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if (error || !user) {
-    redirect('/auth/login')
+    redirect(ROUTES.LOGIN)
   }
 
   return user
@@ -33,7 +34,7 @@ export async function requireGuest() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {
-    redirect('/dashboard')
+    redirect(ROUTES.DASHBOARD)
   }
 }
 
