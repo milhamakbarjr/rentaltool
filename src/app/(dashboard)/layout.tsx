@@ -7,6 +7,7 @@
 
 import { requireAuth, getUserProfile } from '@/lib/auth/guards'
 import { signOut } from '@/lib/auth/auth'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { ROUTES } from '@/utils/constants'
 import type { ReactNode } from 'react'
@@ -17,6 +18,7 @@ interface DashboardLayoutProps {
 
 async function SignOutButton() {
   'use server'
+  const t = await getTranslations('auth')
 
   async function handleSignOut() {
     'use server'
@@ -29,7 +31,7 @@ async function SignOutButton() {
         type="submit"
         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
       >
-        Sign out
+        {t('logout')}
       </button>
     </form>
   )
@@ -39,6 +41,8 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   // Require authentication
   const user = await requireAuth()
   const profile = await getUserProfile(user.id)
+  const t = await getTranslations('navigation')
+  const tSettings = await getTranslations('settings')
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,25 +64,31 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
                   href={ROUTES.DASHBOARD}
                   className="inline-flex items-center border-b-2 border-purple-500 px-1 pt-1 text-sm font-medium text-gray-900"
                 >
-                  Dashboard
+                  {t('dashboard')}
                 </Link>
                 <Link
                   href={ROUTES.RENTALS}
                   className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                 >
-                  Rentals
+                  {t('rentals')}
                 </Link>
                 <Link
                   href={ROUTES.CUSTOMERS}
                   className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                 >
-                  Customers
+                  {t('customers')}
                 </Link>
                 <Link
                   href={ROUTES.INVENTORY}
                   className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                 >
-                  Inventory
+                  {t('inventory')}
+                </Link>
+                <Link
+                  href={ROUTES.SETTINGS}
+                  className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                >
+                  {tSettings('title')}
                 </Link>
               </div>
             </div>
