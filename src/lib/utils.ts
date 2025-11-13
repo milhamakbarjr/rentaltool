@@ -18,8 +18,12 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format number as currency
  */
-export function formatCurrency(amount: number, currency: string = 'SGD'): string {
-  return new Intl.NumberFormat('en-SG', {
+export function formatCurrency(
+  amount: number,
+  currency: string = 'IDR',
+  locale: string = 'id-ID'
+): string {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
   }).format(amount)

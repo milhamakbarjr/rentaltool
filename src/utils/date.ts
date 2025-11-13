@@ -5,28 +5,43 @@
  */
 
 import { format, formatDistance, isAfter, isBefore, parseISO, addDays, differenceInDays, differenceInHours, startOfDay, endOfDay } from 'date-fns'
+import { id as idLocale, enUS as enLocale } from 'date-fns/locale'
+
+// Locale mapping
+const localeMap = {
+  'id-ID': idLocale,
+  'id': idLocale,
+  'en-ID': enLocale,
+  'en': enLocale,
+}
 
 /**
  * Format date to readable string
  */
-export function formatDate(date: string | Date, formatStr: string = 'MMM dd, yyyy'): string {
+export function formatDate(
+  date: string | Date,
+  formatStr: string = 'dd/MM/yyyy',
+  locale: string = 'id-ID'
+): string {
   const dateObj = typeof date === 'string' ? parseISO(date) : date
-  return format(dateObj, formatStr)
+  const dateFnsLocale = localeMap[locale as keyof typeof localeMap] || idLocale
+  return format(dateObj, formatStr, { locale: dateFnsLocale })
 }
 
 /**
  * Format date with time
  */
-export function formatDateTime(date: string | Date): string {
-  return formatDate(date, 'MMM dd, yyyy HH:mm')
+export function formatDateTime(date: string | Date, locale: string = 'id-ID'): string {
+  return formatDate(date, 'dd/MM/yyyy HH:mm', locale)
 }
 
 /**
  * Format relative time (e.g., "2 hours ago", "in 3 days")
  */
-export function formatRelativeTime(date: string | Date): string {
+export function formatRelativeTime(date: string | Date, locale: string = 'id-ID'): string {
   const dateObj = typeof date === 'string' ? parseISO(date) : date
-  return formatDistance(dateObj, new Date(), { addSuffix: true })
+  const dateFnsLocale = localeMap[locale as keyof typeof localeMap] || idLocale
+  return formatDistance(dateObj, new Date(), { addSuffix: true, locale: dateFnsLocale })
 }
 
 /**
@@ -116,14 +131,18 @@ export function isRentalDueSoon(endDate: string | Date, returnDate?: string | Da
 /**
  * Format rental period for display
  */
-export function formatRentalPeriod(startDate: string | Date, endDate: string | Date): string {
+export function formatRentalPeriod(
+  startDate: string | Date,
+  endDate: string | Date,
+  locale: string = 'id-ID'
+): string {
   const duration = calculateRentalDuration(startDate, endDate)
 
   if (duration === 1) {
-    return `${formatDate(startDate, 'MMM dd, yyyy')}`
+    return `${formatDate(startDate, 'dd/MM/yyyy', locale)}`
   }
 
-  return `${formatDate(startDate, 'MMM dd')} - ${formatDate(endDate, 'MMM dd, yyyy')} (${duration} days)`
+  return `${formatDate(startDate, 'dd/MM', locale)} - ${formatDate(endDate, 'dd/MM/yyyy', locale)} (${duration} days)`
 }
 
 /**

@@ -140,11 +140,11 @@ export const DATE_TIME_FORMAT = 'MMM dd, yyyy HH:mm'
 export const TIME_FORMAT = 'HH:mm'
 
 // Currency
-export const DEFAULT_CURRENCY = 'SGD'
-export const SUPPORTED_CURRENCIES = ['SGD', 'USD', 'EUR', 'GBP', 'AUD']
+export const DEFAULT_CURRENCY = 'IDR'
+export const SUPPORTED_CURRENCIES = ['IDR', 'USD', 'SGD', 'EUR', 'GBP', 'AUD']
 
 // Timezones
-export const DEFAULT_TIMEZONE = 'Asia/Singapore'
+export const DEFAULT_TIMEZONE = 'Asia/Jakarta'
 
 // Query Keys (for TanStack Query)
 export const QUERY_KEYS = {

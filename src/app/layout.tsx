@@ -2,6 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { RouteProvider } from "@/providers/router-provider";
 import { Theme } from "@/providers/theme";
 import { Providers } from "@/components/providers";
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { getUserLocale } from '@/i18n/locale';
+import { Toaster } from 'sonner';
 import "@/styles/globals.css";
 import { cx } from "@/utils/cx";
 
@@ -15,19 +19,25 @@ export const viewport: Viewport = {
     colorScheme: "light dark",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const locale = await getUserLocale();
+    const messages = await getMessages();
+
     return (
-        <html lang="en" suppressHydrationWarning>
+        <html lang={locale} suppressHydrationWarning>
             <body className={cx("font-sans bg-primary antialiased")}>
-                <Providers>
-                    <RouteProvider>
-                        <Theme>{children}</Theme>
-                    </RouteProvider>
-                </Providers>
+                <NextIntlClientProvider messages={messages} locale={locale}>
+                    <Providers>
+                        <RouteProvider>
+                            <Theme>{children}</Theme>
+                        </RouteProvider>
+                    </Providers>
+                    <Toaster position="top-right" />
+                </NextIntlClientProvider>
             </body>
         </html>
     );
