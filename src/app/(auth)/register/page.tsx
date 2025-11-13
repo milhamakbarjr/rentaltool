@@ -11,12 +11,15 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { signUp } from '@/lib/auth/auth'
 import { signUpSchema, type SignUpFormData } from '@/lib/validations/auth'
 import { ROUTES } from '@/utils/constants'
 
 export default function RegisterPage() {
   const router = useRouter()
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -80,8 +83,8 @@ export default function RegisterPage() {
             />
           </svg>
         </div>
-        <h3 className="mt-4 text-lg font-medium text-gray-900">Account created successfully!</h3>
-        <p className="mt-2 text-sm text-gray-600">Redirecting to your dashboard...</p>
+        <h3 className="mt-4 text-lg font-medium text-gray-900">{tCommon('success')}</h3>
+        <p className="mt-2 text-sm text-gray-600">{t('emailSent')}</p>
       </div>
     )
   }
@@ -90,11 +93,11 @@ export default function RegisterPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('signUp')}</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Already have an account?{' '}
+          {t('alreadyHaveAccount')}{' '}
           <Link href={ROUTES.LOGIN} className="font-medium text-purple-600 hover:text-purple-500">
-            Sign in
+            {t('signIn')}
           </Link>
         </p>
       </div>
@@ -129,7 +132,7 @@ export default function RegisterPage() {
         {/* Email Field */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email address
+            {t('email')}
           </label>
           <div className="mt-1">
             <input
@@ -149,7 +152,7 @@ export default function RegisterPage() {
         {/* Full Name Field */}
         <div>
           <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-            Full name (optional)
+            {t('fullName')}
           </label>
           <div className="mt-1">
             <input
@@ -169,7 +172,7 @@ export default function RegisterPage() {
         {/* Business Name Field */}
         <div>
           <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">
-            Business name (optional)
+            {t('businessName')}
           </label>
           <div className="mt-1">
             <input
@@ -189,7 +192,7 @@ export default function RegisterPage() {
         {/* Password Field */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
+            {t('password')}
           </label>
           <div className="mt-1">
             <input
@@ -204,15 +207,12 @@ export default function RegisterPage() {
               <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
             )}
           </div>
-          <p className="mt-1 text-xs text-gray-500">
-            Must be at least 8 characters with uppercase, lowercase, and number
-          </p>
         </div>
 
         {/* Confirm Password Field */}
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-            Confirm password
+            {t('confirmPassword')}
           </label>
           <div className="mt-1">
             <input
@@ -258,19 +258,14 @@ export default function RegisterPage() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Creating account...
+                {tCommon('loading')}
               </span>
             ) : (
-              'Create account'
+              t('signUpButton')
             )}
           </button>
         </div>
       </form>
-
-      {/* Terms */}
-      <p className="text-center text-xs text-gray-500">
-        By creating an account, you agree to our Terms of Service and Privacy Policy
-      </p>
     </div>
   )
 }

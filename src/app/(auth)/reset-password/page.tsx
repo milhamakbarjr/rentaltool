@@ -10,11 +10,14 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { resetPassword } from '@/lib/auth/auth'
 import { resetPasswordRequestSchema, type ResetPasswordRequestFormData } from '@/lib/validations/auth'
 import { ROUTES } from '@/utils/constants'
 
 export default function ResetPasswordPage() {
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -66,17 +69,16 @@ export default function ResetPasswordPage() {
             />
           </svg>
         </div>
-        <h3 className="mt-4 text-lg font-medium text-gray-900">Check your email</h3>
+        <h3 className="mt-4 text-lg font-medium text-gray-900">{t('emailSent')}</h3>
         <p className="mt-2 text-sm text-gray-600">
-          We've sent you a password reset link. Please check your email and follow the
-          instructions to reset your password.
+          {t('resetPasswordSuccess')}
         </p>
         <div className="mt-6">
           <Link
             href={ROUTES.LOGIN}
             className="text-sm font-medium text-purple-600 hover:text-purple-500"
           >
-            Back to sign in
+            {t('backToLogin')}
           </Link>
         </div>
       </div>
@@ -87,9 +89,9 @@ export default function ResetPasswordPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Reset your password</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('resetPassword')}</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Enter your email address and we'll send you a link to reset your password.
+          {t('resetPasswordDescription')}
         </p>
       </div>
 
@@ -123,7 +125,7 @@ export default function ResetPasswordPage() {
         {/* Email Field */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email address
+            {t('email')}
           </label>
           <div className="mt-1">
             <input
@@ -169,10 +171,10 @@ export default function ResetPasswordPage() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Sending...
+                {tCommon('loading')}
               </span>
             ) : (
-              'Send reset link'
+              t('resetPasswordButton')
             )}
           </button>
         </div>
@@ -184,7 +186,7 @@ export default function ResetPasswordPage() {
           href={ROUTES.LOGIN}
           className="text-sm font-medium text-purple-600 hover:text-purple-500"
         >
-          Back to sign in
+          {t('backToLogin')}
         </Link>
       </div>
     </div>

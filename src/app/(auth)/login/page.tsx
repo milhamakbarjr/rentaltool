@@ -11,12 +11,15 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { signIn } from '@/lib/auth/auth'
 import { signInSchema, type SignInFormData } from '@/lib/validations/auth'
 import { ROUTES } from '@/utils/constants'
 
 export default function LoginPage() {
   const router = useRouter()
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -55,11 +58,11 @@ export default function LoginPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Sign in to your account</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('signIn')}</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Or{' '}
+          {t('dontHaveAccount')}{' '}
           <Link href={ROUTES.REGISTER} className="font-medium text-purple-600 hover:text-purple-500">
-            create a new account
+            {t('signUp')}
           </Link>
         </p>
       </div>
@@ -94,7 +97,7 @@ export default function LoginPage() {
         {/* Email Field */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email address
+            {t('email')}
           </label>
           <div className="mt-1">
             <input
@@ -114,7 +117,7 @@ export default function LoginPage() {
         {/* Password Field */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
+            {t('password')}
           </label>
           <div className="mt-1">
             <input
@@ -138,7 +141,7 @@ export default function LoginPage() {
               href={ROUTES.RESET_PASSWORD}
               className="font-medium text-purple-600 hover:text-purple-500"
             >
-              Forgot your password?
+              {t('forgotPassword')}
             </Link>
           </div>
         </div>
@@ -172,10 +175,10 @@ export default function LoginPage() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Signing in...
+                {tCommon('loading')}
               </span>
             ) : (
-              'Sign in'
+              t('signInButton')
             )}
           </button>
         </div>

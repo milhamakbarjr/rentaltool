@@ -30,13 +30,35 @@ export function formatCurrency(
 }
 
 /**
- * Format phone number
+ * Format phone number with locale support
  */
-export function formatPhoneNumber(phone: string): string {
+export function formatPhoneNumber(phone: string, locale: string = 'id-ID'): string {
   // Remove all non-digit characters
   const cleaned = phone.replace(/\D/g, '')
 
-  // Format as +XX XXXX XXXX (Singapore format)
+  // Indonesian format: +62 XXX-XXXX-XXXX or 08XX-XXXX-XXXX
+  if (locale.startsWith('id')) {
+    // Mobile numbers starting with 62 (country code)
+    if (cleaned.startsWith('62')) {
+      const number = cleaned.slice(2)
+      if (number.length >= 9) {
+        return `+62 ${number.slice(0, 3)}-${number.slice(3, 7)}-${number.slice(7)}`
+      }
+      return `+62 ${number}`
+    }
+
+    // Mobile numbers starting with 08
+    if (cleaned.startsWith('08') && cleaned.length >= 10) {
+      return `${cleaned.slice(0, 4)}-${cleaned.slice(4, 8)}-${cleaned.slice(8)}`
+    }
+
+    // Mobile numbers starting with 8 (without leading 0)
+    if (cleaned.startsWith('8') && cleaned.length >= 9 && cleaned.length <= 12) {
+      return `+62 ${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`
+    }
+  }
+
+  // Singapore format: +65 XXXX XXXX
   if (cleaned.startsWith('65') && cleaned.length === 10) {
     return `+65 ${cleaned.slice(2, 6)} ${cleaned.slice(6)}`
   }
