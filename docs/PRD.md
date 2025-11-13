@@ -852,32 +852,38 @@ We use the **MoSCoW method** for prioritization:
 ### Technology Stack
 
 #### Frontend
-- **Framework:** Next.js 14+ (React 19)
-- **UI Library:** Untitled UI React components (current stack)
+- **Framework:** Next.js 14+ (App Router, React 19)
+- **UI Library:** Untitled UI React components (strict - no custom components unless unavailable)
 - **Styling:** Tailwind CSS v4.1
-- **Language:** TypeScript 5.8+
-- **State Management:** React Context API + Zustand (for complex state)
-- **Forms:** React Hook Form
-- **Data Fetching:** TanStack Query (React Query)
-- **Charts:** Recharts or Chart.js
-- **Date/Time:** date-fns or Day.js
+- **Language:** TypeScript 5.8+ (strict mode)
+- **State Management:**
+  - Zustand (global UI state, user preferences)
+  - TanStack Query (server state, caching, optimistic updates)
+- **Validation:** Zod (runtime validation + type inference)
+- **Forms:** React Hook Form + Zod resolver
+- **Charts:** Recharts
+- **Date/Time:** date-fns (lightweight)
 - **Image Optimization:** Next.js Image component
+- **Utilities:** clsx + tailwind-merge, nanoid
 
-#### Backend
-- **Runtime:** Node.js 20+
-- **API Framework:** Next.js API Routes or tRPC (for type safety)
-- **Database:** PostgreSQL 15+ (primary) with Prisma ORM
-- **File Storage:** AWS S3 or Cloudflare R2 (images, receipts)
-- **Authentication:** NextAuth.js or Clerk
-- **Email:** Resend or SendGrid
-- **SMS/WhatsApp:** Twilio
+#### Backend & Database
+- **Backend-as-a-Service:** Supabase (Asia Pacific region - Singapore)
+- **Database:** PostgreSQL 15+ via Supabase (free tier: 500MB, unlimited API requests)
+- **Authentication:** Supabase Auth (email/password, magic links, OAuth ready)
+- **File Storage:** Supabase Storage (images, receipts, documents)
+- **Real-time:** Supabase Realtime (for live updates)
+- **Client:** @supabase/supabase-js + @supabase/auth-helpers-nextjs
+- **Row Level Security (RLS):** Enabled from day 1 for multi-user support
+- **Email:** Supabase Auth emails (free tier) + Resend for transactional emails (future)
+- **SMS/WhatsApp:** Twilio (Phase 2)
 
 #### Infrastructure
-- **Hosting:** Vercel (frontend + serverless functions)
-- **Database Hosting:** Railway, Supabase, or AWS RDS
-- **CDN:** Vercel Edge Network
-- **Monitoring:** Vercel Analytics + Sentry
-- **Analytics:** PostHog or Mixpanel
+- **Hosting:** Vercel (frontend + API routes)
+- **Database Hosting:** Supabase (managed Postgres)
+- **CDN:** Vercel Edge Network + Supabase CDN (for storage)
+- **Monitoring:** Vercel Analytics + Sentry (error tracking)
+- **Analytics:** PostHog (product analytics - Phase 2)
+- **Future Migration:** Docker + self-hosted option planned
 
 #### Mobile
 - **Approach:** Progressive Web App (PWA)
@@ -895,61 +901,65 @@ We use the **MoSCoW method** for prioritization:
 ┌─────────────────────────────────────────────────┐
 │           Client Layer (PWA)                    │
 │  ┌──────────────────────────────────────────┐   │
-│  │   Next.js App (React Components)         │   │
+│  │   Next.js 14 App (React 19)              │   │
+│  │   - Untitled UI Components               │   │
 │  │   - Mobile-optimized UI                  │   │
 │  │   - Offline-first with Service Workers   │   │
-│  │   - Local state (Zustand)                │   │
+│  │   - Zustand (UI state)                   │   │
+│  │   - TanStack Query (server state cache)  │   │
+│  │   - Zod validation                       │   │
 │  └──────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────┘
                        │
-                       │ HTTPS / WebSocket
+                       │ HTTPS / Realtime WebSocket
                        ▼
 ┌─────────────────────────────────────────────────┐
-│           API Layer                             │
+│           Supabase Backend (BaaS)               │
 │  ┌──────────────────────────────────────────┐   │
-│  │   Next.js API Routes / tRPC              │   │
-│  │   - RESTful or RPC endpoints             │   │
-│  │   - Authentication middleware            │   │
-│  │   - Rate limiting                        │   │
-│  │   - Request validation                   │   │
+│  │   Supabase API Layer                     │   │
+│  │   - Auto-generated REST API              │   │
+│  │   - GraphQL (optional)                   │   │
+│  │   - Supabase Auth (JWT)                  │   │
+│  │   - Row Level Security (RLS)             │   │
+│  │   - Realtime subscriptions               │   │
+│  │   - Request validation (Zod schemas)     │   │
 │  └──────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────┐
-│           Business Logic Layer                  │
+│                                                  │
 │  ┌──────────────────────────────────────────┐   │
-│  │   Services                               │   │
-│  │   - Rental Service                       │   │
-│  │   - Inventory Service                    │   │
-│  │   - Customer Service                     │   │
-│  │   - Analytics Service                    │   │
-│  │   - Payment Service                      │   │
-│  │   - Notification Service                 │   │
+│  │   Database Functions & Triggers          │   │
+│  │   - calculate_inventory_availability     │   │
+│  │   - calculate_rental_totals              │   │
+│  │   - update_customer_reliability_score    │   │
+│  │   - trigger: rental_status_updates       │   │
 │  └──────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────┐
-│           Data Layer                            │
+│           Data Layer (Supabase)                 │
 │  ┌────────────────────┐  ┌──────────────────┐   │
-│  │   PostgreSQL       │  │   File Storage   │   │
-│  │   (via Prisma)     │  │   (S3/R2)        │   │
-│  │   - Users          │  │   - Images       │   │
-│  │   - Rentals        │  │   - Receipts     │   │
-│  │   - Customers      │  │   - Documents    │   │
-│  │   - Inventory      │  └──────────────────┘   │
-│  │   - Payments       │                         │
-│  └────────────────────┘                         │
+│  │   PostgreSQL 15+   │  │ Supabase Storage │   │
+│  │   (Asia Pacific)   │  │                  │   │
+│  │   - users          │  │   - item_images  │   │
+│  │   - customers      │  │   - receipts     │   │
+│  │   - inventory      │  │   - condition_   │   │
+│  │   - rentals        │  │     photos       │   │
+│  │   - rental_items   │  └──────────────────┘   │
+│  │   - payments       │                         │
+│  │   - categories     │  ┌──────────────────┐   │
+│  │                    │  │  Supabase Auth   │   │
+│  │   RLS Policies ✓   │  │  - User sessions │   │
+│  │   Indexes ✓        │  │  - OAuth tokens  │   │
+│  └────────────────────┘  └──────────────────┘   │
 └─────────────────────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────┐
-│           External Services                     │
-│   - Email (Resend)                              │
-│   - SMS (Twilio)                                │
-│   - Analytics (PostHog)                         │
-│   - Monitoring (Sentry)                         │
+│           External Services (Future)            │
+│   - Resend (transactional emails)               │
+│   - Twilio (SMS/WhatsApp)                       │
+│   - PostHog (product analytics)                 │
+│   - Sentry (error monitoring)                   │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -1339,14 +1349,14 @@ The following features are explicitly **out of scope** for MVP and early phases:
 
 ### Not in MVP
 1. **Multi-location Support:** Single location only for MVP
-2. **Multi-user/Team Collaboration:** Single user account only
+2. **Multi-user/Team Collaboration:** Architecture supports it (RLS enabled), but UI for team management deferred
 3. **Online Customer Booking Portal:** Admin-only interface
-4. **Payment Processing Integration:** Manual payment recording only
+4. **Payment Processing Integration:** Manual payment recording only (no Stripe/PayPal)
 5. **Accounting Software Integration:** Export data only, no direct sync
 6. **Barcode/QR Code Scanning:** Manual item selection
 7. **IoT Integration:** No smart locks or GPS tracking
 8. **Marketplace Features:** No peer-to-peer rental or platform model
-9. **White-label/Reseller Program:** Direct-to-user only
+9. **Monetization Features:** Internal use only, no pricing/billing system
 10. **Native Mobile Apps:** PWA only for MVP
 
 ### Not in Roadmap (12 months)
@@ -1359,45 +1369,75 @@ The following features are explicitly **out of scope** for MVP and early phases:
 
 ---
 
-## Open Questions & Risks
+## Decisions & Risks
 
-### Open Questions
+### Key Decisions Made
 
-#### Product Questions
-1. **Pricing Strategy:**
-   - Freemium vs paid-only?
-   - Pricing tiers (by features or by usage limits)?
-   - Free trial period duration?
-   - **Recommendation:** Freemium with 30-day free trial of premium features, then $19/month basic, $49/month pro
+#### Product Decisions ✓
+1. **Pricing Strategy: DECIDED**
+   - **Internal use only** - No monetization for foreseeable future
+   - No payment/billing system needed in MVP
+   - Focus on product excellence over revenue
 
-2. **Multi-tenant vs Single-tenant:**
-   - Should one account support multiple business locations?
-   - **Recommendation:** Single location for MVP, add multi-location in Phase 3
+2. **Deployment Strategy: DECIDED**
+   - **Primary:** Vercel (fast iteration, zero config)
+   - **Future:** Self-hosted option (Docker) when needed
+   - Region: Asia Pacific (Supabase Singapore)
 
-3. **Data Export & Portability:**
-   - What level of data export should we provide?
-   - **Recommendation:** Full data export in CSV/JSON format, available anytime
+3. **Multi-user Approach: DECIDED**
+   - Architecture supports multi-user (RLS policies from day 1)
+   - UI for team collaboration deferred to Phase 2
+   - Single location per account for MVP
 
-4. **Offline Functionality Scope:**
-   - Which features should work fully offline?
-   - **Recommendation:** Read-only access offline, sync when online (create/edit requires connection)
+4. **Data Strategy: DECIDED**
+   - Supabase free tier (500MB, unlimited API requests)
+   - Manual backup exports (CSV/JSON)
+   - Full data portability
 
-5. **Customer-facing Features:**
-   - Should customers have any login/portal access in MVP?
-   - **Recommendation:** No customer login for MVP, admin shares receipts manually
+5. **Development Approach: DECIDED**
+   - Solo developer
+   - 12-week MVP timeline
+   - No beta program (internal use = live testing)
 
-#### Technical Questions
-1. **Database Choice:**
-   - PostgreSQL vs MongoDB?
-   - **Recommendation:** PostgreSQL for data integrity and complex queries
+#### Technical Decisions ✓
+1. **Database: DECIDED**
+   - Supabase PostgreSQL (Asia Pacific - Singapore)
+   - Pure Supabase client (no Prisma layer)
+   - RLS for security
 
-2. **Real-time Updates:**
-   - Do we need real-time collaboration (if multi-user in future)?
-   - **Recommendation:** Not for MVP, polling every 30s is sufficient
+2. **Authentication: DECIDED**
+   - Supabase Auth (email/password, magic links)
+   - JWT tokens with automatic refresh
+   - Biometric login support (via browser APIs)
 
-3. **File Storage Limits:**
-   - Limit on photo uploads per user?
-   - **Recommendation:** 100 photos for free, 1000 for paid (review after beta)
+3. **State Management: DECIDED**
+   - Zustand for UI state
+   - TanStack Query for server state
+   - Zod for validation everywhere
+
+4. **UI Components: DECIDED**
+   - Untitled UI React (strict policy)
+   - No custom components unless unavailable
+   - Maintain design system consistency
+
+5. **Offline Strategy: DECIDED**
+   - Service Workers + IndexedDB
+   - Read-only offline access
+   - Create/edit requires connection (sync when online)
+
+### Open Questions (Future Phases)
+
+1. **Photo Storage Limits:**
+   - Current: Supabase free tier (1GB storage)
+   - Decision needed when approaching limit
+
+2. **Advanced Analytics:**
+   - Should we add forecasting/ML features?
+   - Deferred to Phase 3+ based on usage patterns
+
+3. **Customer Portal:**
+   - Should customers see their rental history?
+   - Deferred pending internal usage feedback
 
 ---
 
@@ -1529,18 +1569,36 @@ The following features are explicitly **out of scope** for MVP and early phases:
 
 ### C. Technical Dependencies
 
-**Third-party Services:**
-- **Vercel:** Hosting and deployment
-- **PostgreSQL:** Database (Railway/Supabase)
-- **S3/R2:** File storage
+**Core Services (MVP):**
+- **Vercel:** Hosting and deployment (free tier)
+- **Supabase:** Database + Auth + Storage + Realtime (free tier, Asia Pacific)
+  - PostgreSQL 15+ (500MB)
+  - Authentication (50k MAU)
+  - Storage (1GB)
+  - Realtime subscriptions
+
+**Future Services (Phase 2+):**
 - **Resend:** Transactional emails
-- **Twilio:** SMS notifications (Phase 2)
-- **Stripe:** Payment processing (Phase 3)
+- **Twilio:** SMS/WhatsApp notifications
 - **PostHog:** Product analytics
 - **Sentry:** Error monitoring
+- **Stripe:** Payment processing (if needed)
+
+**Development Tools:**
+- **npm packages:** See package.json for complete list
+- **Key dependencies:**
+  - @supabase/supabase-js
+  - @supabase/auth-helpers-nextjs
+  - zustand
+  - @tanstack/react-query
+  - zod
+  - react-hook-form
+  - tailwindcss
+  - date-fns
 
 ### D. Glossary
 
+**Product & Business Terms:**
 - **DAU/MAU:** Daily Active Users / Monthly Active Users ratio
 - **MVP:** Minimum Viable Product
 - **PWA:** Progressive Web App
@@ -1550,9 +1608,18 @@ The following features are explicitly **out of scope** for MVP and early phases:
 - **ARPU:** Average Revenue Per User
 - **LTV:** Customer Lifetime Value
 - **CAC:** Customer Acquisition Cost
+
+**Technical Terms:**
+- **RLS:** Row Level Security (Postgres feature for multi-tenant data isolation)
+- **BaaS:** Backend as a Service
+- **JWT:** JSON Web Token (authentication token format)
+- **SSR:** Server-Side Rendering
+- **ISR:** Incremental Static Regeneration
 - **WCAG:** Web Content Accessibility Guidelines
 - **RTO:** Recovery Time Objective
 - **RPO:** Recovery Point Objective
+- **ORM:** Object-Relational Mapping
+- **API:** Application Programming Interface
 
 ### E. References
 
