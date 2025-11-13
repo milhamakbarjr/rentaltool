@@ -133,7 +133,7 @@ export default function ResetPasswordPage() {
               id="email"
               type="email"
               autoComplete="email"
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
+              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
               placeholder="you@example.com"
             />
             {errors.email && (
