@@ -235,7 +235,36 @@
     "noRentalsFound": "Tidak ada penyewaan ditemukan"
   },
   "analytics": {
-    "title": "Analitik"
+    "title": "Analitik",
+    "subtitle": "Lacak kinerja dan dapatkan wawasan tentang bisnis penyewaan Anda",
+    "totalRevenue": "Total Pendapatan",
+    "activeRentals": "Penyewaan Aktif",
+    "totalCustomers": "Total Pelanggan",
+    "inventoryUtilization": "Utilisasi Inventaris",
+    "revenueTrends": "Tren Pendapatan",
+    "topPerformingItems": "Barang Terlaris",
+    "averageRevenuePerDay": "Rata-rata Pendapatan/Hari",
+    "averageRentalValue": "Nilai Rata-rata Penyewaan",
+    "totalRentals": "Total Penyewaan",
+    "availableItems": "Barang Tersedia",
+    "byRevenue": "Berdasarkan Pendapatan",
+    "byFrequency": "Berdasarkan Frekuensi",
+    "itemName": "Nama Barang",
+    "rentals": "Penyewaan",
+    "revenue": "Pendapatan",
+    "performance": "Kinerja",
+    "excellent": "Sangat Baik",
+    "good": "Baik",
+    "average": "Rata-rata",
+    "noRevenueData": "Tidak ada data pendapatan untuk periode ini",
+    "noRentalData": "Belum ada data penyewaan",
+    "itemsGeneratingRevenue": "Barang menghasilkan pendapatan",
+    "vsPreviousPeriod": "vs periode sebelumnya",
+    "24hours": "24 jam",
+    "7days": "7 hari",
+    "30days": "30 hari",
+    "90days": "90 hari",
+    "12months": "12 bulan"
   },
   "payments": {
     "title": "Pembayaran"
