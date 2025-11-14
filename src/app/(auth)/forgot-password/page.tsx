@@ -71,11 +71,11 @@ export default function ForgotPasswordPage() {
   // Step 2: Check Email
   if (emailSent) {
     return (
-      <section className="min-h-screen overflow-hidden bg-primary px-4 py-12 md:gap-24 md:px-8 md:pt-24">
+      <section className="min-h-screen overflow-hidden bg-primary px-4 py-12 md:px-8 md:pt-24">
         <div className="mx-auto flex w-full max-w-90 flex-col gap-8">
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="relative">
-              <FeaturedIcon color="gray" className="z-10" theme="modern" size="xl">
+              <FeaturedIcon color="gray" theme="modern" size="xl" className="z-10">
                 <Mail01 className="size-7" />
               </FeaturedIcon>
               <BackgroundPattern

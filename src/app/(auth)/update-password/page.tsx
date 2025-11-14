@@ -7,29 +7,29 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { ArrowLeft, Lock01, CheckCircle } from '@untitledui/icons'
 import { Button } from '@/components/base/buttons/button'
 import { Form } from '@/components/base/form/form'
 import { Input } from '@/components/base/input/input'
 import { FeaturedIcon } from '@/components/foundations/featured-icon/featured-icon'
+import { CheckmarkIcon } from '@/components/foundations/icons/checkmark-icon'
 import { BackgroundPattern } from '@/components/shared-assets/background-patterns'
 import { updatePassword } from '@/lib/auth/auth'
 import { ROUTES } from '@/utils/constants'
 import { cx } from '@/utils/cx'
 
 export default function UpdatePasswordPage() {
-  const router = useRouter()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  // Password validation checks
+  // Password validation checks matching resetPasswordSchema
   const hasMinLength = password.length >= 8
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
-  const passwordsMatch = password === confirmPassword && confirmPassword !== ''
+  const hasUppercase = /[A-Z]/.test(password)
+  const hasLowercase = /[a-z]/.test(password)
+  const hasNumber = /[0-9]/.test(password)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -41,7 +41,7 @@ export default function UpdatePasswordPage() {
     }
 
     // Validate password requirements
-    if (!hasMinLength || !hasSpecialChar) {
+    if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber) {
       setError('Please meet all password requirements')
       return
     }
@@ -66,9 +66,7 @@ export default function UpdatePasswordPage() {
     }
   }
 
-  const handleContinue = () => {
-    router.push(ROUTES.LOGIN)
-  }
+
 
   // Step 4: Password Reset Success
   if (success) {
@@ -100,7 +98,7 @@ export default function UpdatePasswordPage() {
             </div>
           </div>
 
-          <Button onClick={handleContinue} size="lg" className="w-full" type="button">
+          <Button href={ROUTES.LOGIN} size="lg" className="w-full">
             Continue
           </Button>
 
@@ -116,11 +114,11 @@ export default function UpdatePasswordPage() {
 
   // Step 3: Set New Password
   return (
-    <section className="min-h-screen overflow-hidden bg-primary px-4 py-12 md:gap-24 md:px-8 md:pt-24">
+    <section className="min-h-screen overflow-hidden bg-primary px-4 py-12 md:px-8 md:pt-24">
       <div className="mx-auto flex w-full max-w-90 flex-col gap-8">
         <div className="flex flex-col items-center gap-6 text-center">
           <div className="relative">
-            <FeaturedIcon color="gray" className="z-10" theme="modern" size="xl">
+            <FeaturedIcon color="gray" theme="modern" size="xl" className="z-10">
               <Lock01 className="size-7" />
             </FeaturedIcon>
             <BackgroundPattern
@@ -173,23 +171,16 @@ export default function UpdatePasswordPage() {
               onChange={setConfirmPassword}
               value={confirmPassword}
             />
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3" role="status" aria-live="polite">
               <span className="flex gap-2">
                 <div
                   className={cx(
                     'flex size-5 items-center justify-center rounded-full bg-fg-disabled_subtle text-fg-white transition duration-150 ease-in-out',
                     hasMinLength ? 'bg-fg-success-primary' : '',
                   )}
+                  aria-label={hasMinLength ? 'Requirement met: at least 8 characters' : 'Requirement not met: at least 8 characters'}
                 >
-                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                    <path
-                      d="M1.25 4L3.75 6.5L8.75 1.5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <CheckmarkIcon />
                 </div>
                 <p className="text-sm text-tertiary">Must be at least 8 characters</p>
               </span>
@@ -197,20 +188,37 @@ export default function UpdatePasswordPage() {
                 <div
                   className={cx(
                     'flex size-5 items-center justify-center rounded-full bg-fg-disabled_subtle text-fg-white transition duration-150 ease-in-out',
-                    hasSpecialChar ? 'bg-fg-success-primary' : '',
+                    hasUppercase ? 'bg-fg-success-primary' : '',
                   )}
+                  aria-label={hasUppercase ? 'Requirement met: one uppercase letter' : 'Requirement not met: one uppercase letter'}
                 >
-                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                    <path
-                      d="M1.25 4L3.75 6.5L8.75 1.5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <CheckmarkIcon />
                 </div>
-                <p className="text-sm text-tertiary">Must contain one special character</p>
+                <p className="text-sm text-tertiary">Must contain one uppercase letter</p>
+              </span>
+              <span className="flex gap-2">
+                <div
+                  className={cx(
+                    'flex size-5 items-center justify-center rounded-full bg-fg-disabled_subtle text-fg-white transition duration-150 ease-in-out',
+                    hasLowercase ? 'bg-fg-success-primary' : '',
+                  )}
+                  aria-label={hasLowercase ? 'Requirement met: one lowercase letter' : 'Requirement not met: one lowercase letter'}
+                >
+                  <CheckmarkIcon />
+                </div>
+                <p className="text-sm text-tertiary">Must contain one lowercase letter</p>
+              </span>
+              <span className="flex gap-2">
+                <div
+                  className={cx(
+                    'flex size-5 items-center justify-center rounded-full bg-fg-disabled_subtle text-fg-white transition duration-150 ease-in-out',
+                    hasNumber ? 'bg-fg-success-primary' : '',
+                  )}
+                  aria-label={hasNumber ? 'Requirement met: one number' : 'Requirement not met: one number'}
+                >
+                  <CheckmarkIcon />
+                </div>
+                <p className="text-sm text-tertiary">Must contain one number</p>
               </span>
             </div>
           </div>
