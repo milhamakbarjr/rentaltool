@@ -15,7 +15,7 @@ export const customerSchema = z.object({
   phone: z.string().max(20, 'Phone number is too long').optional().nullable().or(z.literal('')),
   address: z.string().max(500, 'Address is too long').optional().nullable().or(z.literal('')),
   notes: z.string().max(1000, 'Notes are too long').optional().nullable().or(z.literal('')),
-  tags: z.array(z.string()).optional().default([]),
+  tags: z.array(z.string()),
 })
 
 export type CustomerFormData = z.infer<typeof customerSchema>

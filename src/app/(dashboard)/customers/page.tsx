@@ -6,47 +6,49 @@
 
 import { requireAuth } from '@/lib/auth/guards'
 import { getTranslations } from 'next-intl/server'
-import Link from 'next/link'
 import { ROUTES } from '@/utils/constants'
 import { CustomerList } from '@/features/customers/components/customer-list'
+import { Button } from '@/components/base/buttons/button'
+import { Plus } from '@untitledui/icons'
 
 export default async function CustomersPage() {
   await requireAuth()
   const t = await getTranslations('customers')
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            {t('subtitle')}
-          </p>
-        </div>
-        <Link
-          href={`${ROUTES.CUSTOMERS}/new`}
-          className="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500"
-        >
-          <svg
-            className="mr-2 h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          {t('addCustomer')}
-        </Link>
-      </div>
+    <div className="bg-primary">
+      <main className="bg-primary pt-8 pb-12 lg:pt-12 lg:pb-24">
+        <div className="flex flex-col gap-8">
+          <div className="mx-auto flex w-full max-w-container flex-col gap-5 px-4 lg:px-8">
+            {/* Page header */}
+            <div className="relative flex flex-col gap-5 bg-primary">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex-1">
+                  <h1 className="text-display-sm font-semibold text-primary">
+                    {t('title')}
+                  </h1>
+                  <p className="mt-1 text-md text-tertiary">
+                    {t('subtitle')}
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    href={`${ROUTES.CUSTOMERS}/new`}
+                    color="primary"
+                    size="md"
+                    iconLeading={Plus}
+                  >
+                    {t('addCustomer')}
+                  </Button>
+                </div>
+              </div>
+            </div>
 
-      {/* Customer List */}
-      <CustomerList />
+            {/* Customer List */}
+            <CustomerList />
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
