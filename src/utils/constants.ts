@@ -20,7 +20,8 @@ export const ROUTES = {
   SETTINGS: '/settings',
   LOGIN: '/login',
   REGISTER: '/register',
-  RESET_PASSWORD: '/reset-password',
+  FORGOT_PASSWORD: '/forgot-password',
+  UPDATE_PASSWORD: '/update-password',
   AUTH_CALLBACK: '/auth/callback',
 } as const
 

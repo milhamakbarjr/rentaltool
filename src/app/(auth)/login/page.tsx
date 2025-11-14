@@ -119,7 +119,7 @@ export default function LoginPage() {
           </div>
 
           <div className="flex items-center justify-end">
-            <Button color="link-color" size="md" href={ROUTES.RESET_PASSWORD}>
+            <Button color="link-color" size="md" href={ROUTES.FORGOT_PASSWORD}>
               Forgot password
             </Button>
           </div>
