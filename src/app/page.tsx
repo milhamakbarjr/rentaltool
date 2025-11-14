@@ -1,3 +1,20 @@
-import { HomeScreen } from "./home-screen";
+/**
+ * Home Page
+ *
+ * Redirects to dashboard if authenticated, otherwise to login
+ */
 
-export default HomeScreen;
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { ROUTES } from '@/utils/constants'
+
+export default async function HomePage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect(ROUTES.DASHBOARD)
+  } else {
+    redirect(ROUTES.LOGIN)
+  }
+}
