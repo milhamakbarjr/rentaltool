@@ -128,9 +128,9 @@ export async function getTopItems(limit: number = 5): Promise<TopItem[]> {
   // Group by item and calculate stats
   const itemStats: Record<string, { name: string; rental_count: number; total_revenue: number }> = {}
 
-  data?.forEach((item: any) => {
+  data?.forEach((item) => {
     const itemId = item.inventory_item_id
-    const itemName = item.inventory_item?.name || 'Unknown'
+    const itemName = (item.inventory_item as { name?: string } | null)?.name || 'Unknown'
 
     if (!itemStats[itemId]) {
       itemStats[itemId] = {
@@ -174,11 +174,11 @@ export async function getRecentRentals(limit: number = 10) {
   if (error) throw error
 
   // Map database column names to frontend field names
-  return data?.map((rental: any) => ({
+  return data?.map((rental) => ({
     ...rental,
     customer: rental.customer ? {
       ...rental.customer,
-      name: rental.customer.full_name,
+      name: (rental.customer as { full_name?: string }).full_name,
     } : null
   }))
 }

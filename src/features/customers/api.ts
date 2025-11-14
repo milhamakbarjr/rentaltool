@@ -36,10 +36,11 @@ export async function getCustomers(filters?: CustomerFilterData) {
   if (error) throw error
 
   // Map database column names to frontend field names
-  return data?.map((customer: any) => ({
+  type CustomerRow = { full_name: string; phone_number: string }
+  return data?.map((customer) => ({
     ...customer,
-    name: customer.full_name,
-    phone: customer.phone_number,
+    name: (customer as CustomerRow).full_name,
+    phone: (customer as CustomerRow).phone_number,
   }))
 }
 
@@ -170,7 +171,8 @@ export async function getCustomerTags() {
   if (error) throw error
 
   // Extract unique tags from all customers
-  const allTags = data?.flatMap((c: any) => c.tags || []) || []
+  type CustomerWithTags = { tags: string[] | null }
+  const allTags = data?.flatMap((c) => (c as CustomerWithTags).tags || []) || []
   const uniqueTags = [...new Set(allTags)].sort()
 
   return uniqueTags

@@ -55,7 +55,7 @@ export const InventoryMain = () => {
     const filters: InventoryFilterData = useMemo(() => {
         const f: InventoryFilterData = {
             search: searchQuery || undefined,
-            sort_by: (sortDescriptor?.column as any) || "created_at",
+            sort_by: (sortDescriptor?.column as InventoryFilterData['sort_by']) || "created_at",
             sort_order: sortDescriptor?.direction === "ascending" ? "asc" : "desc",
         };
 
@@ -64,7 +64,7 @@ export const InventoryMain = () => {
         }
 
         if (selectedTab !== "all") {
-            f.status = selectedTab as any;
+            f.status = selectedTab as InventoryFilterData['status'];
         }
 
         return f;
@@ -246,7 +246,7 @@ export const InventoryMain = () => {
 
                                         <Table.Body items={sortedItems}>
                                             {(item) => {
-                                                const pricing = item.pricing as any;
+                                                const pricing = item.pricing as { daily?: number } | null;
                                                 const dailyRate = pricing?.daily || 0;
 
                                                 return (

@@ -88,8 +88,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
 
             // Handle nested customer object
             if (sortDescriptor.column === "customer" && typeof first === "object" && typeof second === "object") {
-                first = (first as any)?.name;
-                second = (second as any)?.name;
+                first = (first as { name?: string } | null)?.name;
+                second = (second as { name?: string } | null)?.name;
             }
 
             // Handle numbers

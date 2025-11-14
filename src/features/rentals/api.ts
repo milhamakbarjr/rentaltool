@@ -60,13 +60,14 @@ export async function getRentals(filters?: RentalFilterData) {
   if (error) throw error
 
   // Map database column names to frontend field names
-  return data?.map((rental: any) => ({
+  type CustomerData = { id: string; full_name: string; email: string | null; phone_number: string }
+  return data?.map((rental) => ({
     ...rental,
     customer: rental.customer ? {
-      id: rental.customer.id,
-      name: rental.customer.full_name,
-      email: rental.customer.email,
-      phone: rental.customer.phone_number,
+      id: (rental.customer as CustomerData).id,
+      name: (rental.customer as CustomerData).full_name,
+      email: (rental.customer as CustomerData).email,
+      phone: (rental.customer as CustomerData).phone_number,
     } : null
   }))
 }
