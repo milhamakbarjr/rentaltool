@@ -56,7 +56,7 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
 
     // Fetch dashboard data
     const { data: stats, isLoading: statsLoading } = useDashboardStats();
-    const dateRange = generateDateRange();
+    const dateRange = useMemo(() => generateDateRange(), []);
     const { data: revenueData } = useRevenueByDate(dateRange.start, dateRange.end);
     const { data: recentRentals } = useRecentRentals(10);
 
