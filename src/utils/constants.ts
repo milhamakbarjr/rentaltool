@@ -47,10 +47,10 @@ export const RENTAL_STATUS_LABELS: Record<string, string> = {
 export const RENTAL_STATUS_COLORS: Record<string, string> = {
   [RENTAL_STATUSES.DRAFT]: 'gray',
   [RENTAL_STATUSES.UPCOMING]: 'blue',
-  [RENTAL_STATUSES.ACTIVE]: 'green',
+  [RENTAL_STATUSES.ACTIVE]: 'success',
   [RENTAL_STATUSES.COMPLETED]: 'gray',
-  [RENTAL_STATUSES.CANCELLED]: 'red',
-  [RENTAL_STATUSES.OVERDUE]: 'red',
+  [RENTAL_STATUSES.CANCELLED]: 'error',
+  [RENTAL_STATUSES.OVERDUE]: 'error',
 }
 
 // Payment Statuses
