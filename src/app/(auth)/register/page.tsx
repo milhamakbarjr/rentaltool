@@ -8,10 +8,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
+import { Button } from '@/components/base/buttons/button'
+import { SocialButton } from '@/components/base/buttons/social-button'
+import { Form } from '@/components/base/form/form'
+import { Input } from '@/components/base/input/input'
+import { UntitledLogoMinimal } from '@/components/foundations/logo/untitledui-logo-minimal'
 import { signUp } from '@/lib/auth/auth'
 import { signUpSchema, type SignUpFormData } from '@/lib/validations/auth'
 import { ROUTES } from '@/utils/constants'
@@ -25,11 +29,18 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      fullName: '',
+      businessName: '',
+    },
   })
 
   const onSubmit = async (data: SignUpFormData) => {
@@ -67,48 +78,52 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-          <svg
-            className="h-6 w-6 text-green-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+      <section className="min-h-screen bg-primary px-4 py-12 sm:bg-secondary md:px-8 md:pt-24 md:pb-[270px]">
+        <div className="flex w-full flex-col gap-6 bg-primary sm:mx-auto sm:max-w-110 sm:rounded-2xl sm:px-10 sm:py-8 sm:shadow-sm">
+          <div className="flex flex-col items-center gap-6 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success-100">
+              <svg
+                className="h-6 w-6 text-success-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col gap-2">
+              <h1 className="text-display-xs font-semibold text-primary">{tCommon('success')}</h1>
+              <p className="text-md text-tertiary">{t('emailSent')}</p>
+            </div>
+          </div>
         </div>
-        <h3 className="mt-4 text-lg font-medium text-gray-900">{tCommon('success')}</h3>
-        <p className="mt-2 text-sm text-gray-600">{t('emailSent')}</p>
-      </div>
+      </section>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">{t('signUp')}</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          {t('alreadyHaveAccount')}{' '}
-          <Link href={ROUTES.LOGIN} className="font-medium text-purple-600 hover:text-purple-500">
-            {t('signIn')}
-          </Link>
-        </p>
-      </div>
+    <section className="min-h-screen bg-primary px-4 py-12 sm:bg-secondary md:px-8 md:pt-24 md:pb-[270px]">
+      <div className="flex w-full flex-col gap-6 bg-primary sm:mx-auto sm:max-w-110 sm:rounded-2xl sm:px-10 sm:py-8 sm:shadow-sm">
+        <div className="flex flex-col items-center gap-6 text-center">
+          <UntitledLogoMinimal className="size-12 max-md:hidden" />
+          <UntitledLogoMinimal className="size-10 md:hidden" />
+          <div className="flex flex-col gap-2">
+            <h1 className="text-display-xs font-semibold text-primary">{t('signUp')}</h1>
+            <p className="text-md text-tertiary">{t('signUpSubtitle')}</p>
+          </div>
+        </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="rounded-md bg-red-50 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
+        {/* Error Message */}
+        {error && (
+          <div className="rounded-lg bg-error-50 p-4 ring-1 ring-error-200 ring-inset">
+            <div className="flex gap-3">
               <svg
-                className="h-5 w-5 text-red-400"
+                className="h-5 w-5 shrink-0 text-error-500"
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
@@ -119,153 +134,111 @@ export default function RegisterPage() {
                   clipRule="evenodd"
                 />
               </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-red-800">{error}</p>
+              <p className="text-sm font-medium text-error-700">{error}</p>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Registration Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Email Field */}
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            {t('email')}
-          </label>
-          <div className="mt-1">
-            <input
-              {...register('email')}
-              id="email"
-              type="email"
-              autoComplete="email"
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
-              placeholder="you@example.com"
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmit(onSubmit)(e)
+          }}
+          className="flex flex-col gap-6"
+        >
+          <div className="flex flex-col gap-5">
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder={t('emailPlaceholder')}
+                  size="md"
+                  isRequired
+                  isInvalid={!!errors.email}
+                  hint={errors.email?.message}
+                />
+              )}
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Full Name Field */}
-        <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-            {t('fullName')}
-          </label>
-          <div className="mt-1">
-            <input
-              {...register('fullName')}
-              id="fullName"
-              type="text"
-              autoComplete="name"
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
-              placeholder="John Doe"
+            <Controller
+              name="fullName"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder={t('fullNamePlaceholder')}
+                  size="md"
+                  isInvalid={!!errors.fullName}
+                  hint={errors.fullName?.message}
+                />
+              )}
             />
-            {errors.fullName && (
-              <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Business Name Field */}
-        <div>
-          <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">
-            {t('businessName')}
-          </label>
-          <div className="mt-1">
-            <input
-              {...register('businessName')}
-              id="businessName"
-              type="text"
-              autoComplete="organization"
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
-              placeholder="My Rental Business"
+            <Controller
+              name="businessName"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder={t('businessNamePlaceholder')}
+                  size="md"
+                  isInvalid={!!errors.businessName}
+                  hint={errors.businessName?.message}
+                />
+              )}
             />
-            {errors.businessName && (
-              <p className="mt-1 text-sm text-red-600">{errors.businessName.message}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Password Field */}
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            {t('password')}
-          </label>
-          <div className="mt-1">
-            <input
-              {...register('password')}
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
-              placeholder="••••••••"
+            <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder={t('passwordPlaceholder')}
+                  size="md"
+                  isRequired
+                  isInvalid={!!errors.password}
+                  hint={errors.password?.message || t('passwordHint')}
+                />
+              )}
             />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Confirm Password Field */}
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-            {t('confirmPassword')}
-          </label>
-          <div className="mt-1">
-            <input
-              {...register('confirmPassword')}
-              id="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
-              placeholder="••••••••"
+            <Controller
+              name="confirmPassword"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder={t('confirmPasswordPlaceholder')}
+                  size="md"
+                  isRequired
+                  isInvalid={!!errors.confirmPassword}
+                  hint={errors.confirmPassword?.message}
+                />
+              )}
             />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
-            )}
           </div>
-        </div>
 
-        {/* Submit Button */}
-        <div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex w-full justify-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isLoading ? (
-              <span className="flex items-center">
-                <svg
-                  className="mr-2 h-4 w-4 animate-spin text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                {tCommon('loading')}
-              </span>
-            ) : (
-              t('signUpButton')
-            )}
-          </button>
+          <div className="flex flex-col gap-4">
+            <Button type="submit" size="lg" isDisabled={isLoading}>
+              {isLoading ? tCommon('loading') : t('signUpButton')}
+            </Button>
+            <SocialButton social="google" theme="color">
+              {t('signUpWithGoogle')}
+            </SocialButton>
+          </div>
+        </Form>
+
+        <div className="flex justify-center gap-1 text-center">
+          <span className="text-sm text-tertiary">{t('alreadyHaveAccount')}</span>
+          <Button href={ROUTES.LOGIN} color="link-color" size="md">
+            {t('signIn')}
+          </Button>
         </div>
-      </form>
-    </div>
+      </div>
+    </section>
   )
 }
