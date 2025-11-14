@@ -20,6 +20,8 @@ import {
   updateCategory,
   deleteCategory,
   checkItemAvailability,
+  getInventoryUtilization,
+  getInventoryStats,
 } from '../api'
 import type { InventoryItemFormData, InventoryFilterData } from '../schemas/inventory-schema'
 
@@ -159,5 +161,25 @@ export function useCheckAvailability(itemId: string, startDate: string, endDate:
     queryKey: [QUERY_KEYS.INVENTORY, 'availability', itemId, startDate, endDate, excludeRentalId],
     queryFn: () => checkItemAvailability(itemId, startDate, endDate, excludeRentalId),
     enabled: !!itemId && !!startDate && !!endDate,
+  })
+}
+
+/**
+ * Fetch inventory utilization/analytics
+ */
+export function useInventoryUtilization() {
+  return useQuery({
+    queryKey: [QUERY_KEYS.INVENTORY, 'utilization'],
+    queryFn: getInventoryUtilization,
+  })
+}
+
+/**
+ * Fetch inventory statistics
+ */
+export function useInventoryStats() {
+  return useQuery({
+    queryKey: [QUERY_KEYS.INVENTORY, 'stats'],
+    queryFn: getInventoryStats,
   })
 }

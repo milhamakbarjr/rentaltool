@@ -274,3 +274,66 @@ export async function checkItemAvailability(
 
   return data[0]
 }
+
+/**
+ * Get inventory analytics/utilization
+ */
+export async function getInventoryUtilization() {
+  const supabase = createClient()
+
+  const { data, error } = await supabase
+    .from('inventory_utilization')
+    .select('*')
+    .order('total_revenue', { ascending: false })
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+/**
+ * Get inventory statistics
+ */
+export async function getInventoryStats() {
+  const supabase = createClient()
+
+  // Get total items count
+  const { count: totalItems } = await supabase
+    .from('inventory_items')
+    .select('*', { count: 'exact', head: true })
+
+  // Get available items count
+  const { count: availableItems } = await supabase
+    .from('inventory_items')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'available')
+
+  // Get rented items count
+  const { count: rentedItems } = await supabase
+    .from('inventory_items')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'rented')
+
+  // Get maintenance items count
+  const { count: maintenanceItems } = await supabase
+    .from('inventory_items')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'maintenance')
+
+  // Get total inventory value (based on purchase cost)
+  const { data: items } = await supabase
+    .from('inventory_items')
+    .select('purchase_cost')
+
+  const totalValue = items?.reduce((sum: number, item: { purchase_cost: number | null }) => sum + (item.purchase_cost || 0), 0) || 0
+
+  return {
+    total_items: totalItems || 0,
+    available_items: availableItems || 0,
+    rented_items: rentedItems || 0,
+    maintenance_items: maintenanceItems || 0,
+    total_value: totalValue,
+  }
+}
