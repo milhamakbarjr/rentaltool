@@ -18,13 +18,24 @@ export async function getPayments() {
       rental:rentals(
         id,
         rental_number,
-        customer:customers(id, name)
+        customer:customers(id, full_name)
       )
     `)
     .order('payment_date', { ascending: false })
 
   if (error) throw error
-  return data
+
+  // Map database column names to frontend field names
+  return data?.map((payment: any) => ({
+    ...payment,
+    rental: payment.rental ? {
+      ...payment.rental,
+      customer: payment.rental.customer ? {
+        id: payment.rental.customer.id,
+        name: payment.rental.customer.full_name,
+      } : null
+    } : null
+  }))
 }
 
 /**

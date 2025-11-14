@@ -34,7 +34,13 @@ export async function getCustomers(filters?: CustomerFilterData) {
   const { data, error } = await query
 
   if (error) throw error
-  return data
+
+  // Map database column names to frontend field names
+  return data?.map((customer: any) => ({
+    ...customer,
+    name: customer.full_name,
+    phone: customer.phone_number,
+  }))
 }
 
 /**
@@ -60,6 +66,16 @@ export async function getCustomer(id: string) {
     .single()
 
   if (error) throw error
+
+  // Map database column names to frontend field names
+  if (data) {
+    return {
+      ...data,
+      name: data.full_name,
+      phone: data.phone_number,
+    }
+  }
+
   return data
 }
 
@@ -69,13 +85,14 @@ export async function getCustomer(id: string) {
 export async function createCustomer(data: CustomerFormData, userId: string) {
   const supabase = createClient()
 
-  // Clean up empty strings to null
+  // Map frontend field names to database column names and clean up empty strings
   const cleanData = {
-    ...data,
+    full_name: data.name,
     email: data.email || null,
-    phone: data.phone || null,
+    phone_number: data.phone || null,
     address: data.address || null,
     notes: data.notes || null,
+    tags: data.tags || [],
     user_id: userId,
   }
 
@@ -86,7 +103,13 @@ export async function createCustomer(data: CustomerFormData, userId: string) {
     .single()
 
   if (error) throw error
-  return newCustomer
+
+  // Map database column names back to frontend field names
+  return {
+    ...newCustomer,
+    name: newCustomer.full_name,
+    phone: newCustomer.phone_number,
+  }
 }
 
 /**
@@ -95,13 +118,14 @@ export async function createCustomer(data: CustomerFormData, userId: string) {
 export async function updateCustomer(id: string, data: CustomerFormData) {
   const supabase = createClient()
 
-  // Clean up empty strings to null
+  // Map frontend field names to database column names and clean up empty strings
   const cleanData = {
-    ...data,
+    full_name: data.name,
     email: data.email || null,
-    phone: data.phone || null,
+    phone_number: data.phone || null,
     address: data.address || null,
     notes: data.notes || null,
+    tags: data.tags || [],
   }
 
   const { data: updatedCustomer, error } = await supabase
@@ -112,7 +136,13 @@ export async function updateCustomer(id: string, data: CustomerFormData) {
     .single()
 
   if (error) throw error
-  return updatedCustomer
+
+  // Map database column names back to frontend field names
+  return {
+    ...updatedCustomer,
+    name: updatedCustomer.full_name,
+    phone: updatedCustomer.phone_number,
+  }
 }
 
 /**
@@ -140,7 +170,7 @@ export async function getCustomerTags() {
   if (error) throw error
 
   // Extract unique tags from all customers
-  const allTags = data?.flatMap(c => c.tags || []) || []
+  const allTags = data?.flatMap((c: any) => c.tags || []) || []
   const uniqueTags = [...new Set(allTags)].sort()
 
   return uniqueTags
