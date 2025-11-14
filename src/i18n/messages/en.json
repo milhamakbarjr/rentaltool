@@ -225,7 +225,14 @@
     "damageNotes": "Damage notes",
     "returnSummary": "Summary",
     "originalAmount": "Original Amount",
-    "additionalChargesDescription": "Late fees, damage, or other charges"
+    "additionalChargesDescription": "Late fees, damage, or other charges",
+    "allRentals": "All Rentals",
+    "totalRentalsMetric": "Total Rentals",
+    "activeRentalsMetric": "Active Rentals",
+    "totalRevenueMetric": "Total Revenue",
+    "errorLoading": "Failed to load rentals. Please try again.",
+    "loadingRentals": "Loading rentals...",
+    "noRentalsFound": "No rentals found"
   },
   "analytics": {
     "title": "Analytics"

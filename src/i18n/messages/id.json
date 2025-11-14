@@ -225,7 +225,14 @@
     "damageNotes": "Catatan kerusakan",
     "returnSummary": "Ringkasan",
     "originalAmount": "Jumlah Awal",
-    "additionalChargesDescription": "Biaya terlambat, rusak, atau lainnya"
+    "additionalChargesDescription": "Biaya terlambat, rusak, atau lainnya",
+    "allRentals": "Semua Penyewaan",
+    "totalRentalsMetric": "Total Penyewaan",
+    "activeRentalsMetric": "Penyewaan Aktif",
+    "totalRevenueMetric": "Total Pendapatan",
+    "errorLoading": "Gagal memuat penyewaan. Silakan coba lagi.",
+    "loadingRentals": "Memuat penyewaan...",
+    "noRentalsFound": "Tidak ada penyewaan ditemukan"
   },
   "analytics": {
     "title": "Analitik"
