@@ -9,7 +9,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Mail01, Phone, MapPin, Edit05, Trash01, FileText01 } from '@untitledui/icons'
+import { Mail01, Phone, MarkerPin01, Edit05, Trash01, File01 } from '@untitledui/icons'
 import { useCustomer, useDeleteCustomer } from '../hooks/use-customers'
 import { CustomerForm } from './customer-form'
 import { ROUTES } from '@/utils/constants'
@@ -90,9 +90,9 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-primary">Edit Customer</h2>
           <Button
-            hierarchy="tertiary-gray"
+            color="tertiary"
             size="sm"
-            onPress={() => setIsEditing(false)}
+            onClick={() => setIsEditing(false)}
           >
             Cancel
           </Button>
@@ -111,20 +111,20 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
       {/* Header Actions */}
       <div className="flex items-center justify-end gap-3">
         <Button
-          hierarchy="secondary-gray"
+          color="secondary"
           size="md"
-          onPress={() => setIsEditing(true)}
+          iconLeading={Edit05}
+          onClick={() => setIsEditing(true)}
         >
-          <Edit05 className="h-4 w-4" />
           Edit
         </Button>
         <Button
-          hierarchy="secondary-error"
+          color="secondary-destructive"
           size="md"
-          onPress={handleDelete}
+          iconLeading={Trash01}
+          onClick={handleDelete}
           isDisabled={isDeleting}
         >
-          <Trash01 className="h-4 w-4" />
           {isDeleting ? 'Deleting...' : 'Delete'}
         </Button>
       </div>
@@ -171,7 +171,7 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
 
                 {customer.address && (
                   <div className="flex items-start gap-2 text-secondary">
-                    <MapPin className="mt-0.5 h-5 w-5 text-tertiary" />
+                    <MarkerPin01 className="mt-0.5 h-5 w-5 text-tertiary" />
                     <span className="text-md">{customer.address}</span>
                   </div>
                 )}
@@ -230,7 +230,7 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary_subtle">
-                        <FileText01 className="h-5 w-5 text-tertiary" />
+                        <File01 className="h-5 w-5 text-tertiary" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-primary">
@@ -280,7 +280,7 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
             <div className="mt-6">
               <EmptyState size="md">
                 <EmptyState.Header>
-                  <EmptyState.FeaturedIcon icon={FileText01} color="gray" theme="modern" />
+                  <EmptyState.FeaturedIcon icon={File01} color="gray" theme="modern" />
                 </EmptyState.Header>
                 <EmptyState.Content>
                   <EmptyState.Title>No rental history</EmptyState.Title>

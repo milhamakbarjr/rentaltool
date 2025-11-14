@@ -8,7 +8,7 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { SearchLg, Mail01, Phone, MapPin } from '@untitledui/icons'
+import { SearchLg, Mail01, Phone } from '@untitledui/icons'
 import type { SortDescriptor } from 'react-aria-components'
 import { Table, TableCard } from '@/components/application/table/table'
 import { EmptyState } from '@/components/application/empty-state/empty-state'
@@ -122,11 +122,11 @@ export function CustomerList() {
             selectedKey={filters.tag || ''}
             onSelectionChange={(key) => setFilters({ ...filters, tag: key as string })}
           >
-            <Select.Item key="" textValue="All tags">
+            <Select.Item id="" textValue="All tags">
               All tags
             </Select.Item>
             {tags.map((tag) => (
-              <Select.Item key={tag} textValue={tag}>
+              <Select.Item id={tag} key={tag} textValue={tag}>
                 {tag}
               </Select.Item>
             ))}

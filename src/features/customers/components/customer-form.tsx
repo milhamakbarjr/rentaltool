@@ -10,7 +10,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { XClose } from '@untitledui/icons'
 import { useCreateCustomer, useUpdateCustomer } from '../hooks/use-customers'
 import { customerSchema, type CustomerFormData } from '../schemas/customer-schema'
 import { ROUTES } from '@/utils/constants'
@@ -43,17 +42,17 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
     setValue,
   } = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
-    defaultValues: initialData || {
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      notes: '',
-      tags: [],
+    defaultValues: {
+      name: initialData?.name || '',
+      email: initialData?.email || '',
+      phone: initialData?.phone || '',
+      address: initialData?.address || '',
+      notes: initialData?.notes || '',
+      tags: initialData?.tags || [],
     },
   })
 
-  const tags = watch('tags') || []
+  const tags = watch('tags')
 
   const onSubmit = async (data: CustomerFormData) => {
     try {
@@ -173,7 +172,7 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
               isInvalid={!!errors.address}
               hint={errors.address?.message}
               value={field.value || ''}
-              onChange={(e) => field.onChange(e.target.value)}
+              onChange={field.onChange}
             />
           )}
         />
@@ -199,9 +198,9 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
           />
           <Button
             type="button"
-            hierarchy="secondary-gray"
+            color="secondary"
             size="md"
-            onPress={handleAddTag}
+            onClick={handleAddTag}
           >
             Add
           </Button>
@@ -241,7 +240,7 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
               isInvalid={!!errors.notes}
               hint={errors.notes?.message}
               value={field.value || ''}
-              onChange={(e) => field.onChange(e.target.value)}
+              onChange={field.onChange}
             />
           )}
         />
@@ -251,15 +250,15 @@ export function CustomerForm({ initialData, customerId, mode = 'create' }: Custo
       <div className="flex items-center justify-end gap-3 border-t border-secondary pt-6">
         <Button
           type="button"
-          hierarchy="secondary-gray"
+          color="secondary"
           size="md"
-          onPress={() => router.back()}
+          onClick={() => router.back()}
         >
           Cancel
         </Button>
         <Button
           type="submit"
-          hierarchy="primary"
+          color="primary"
           size="md"
           isDisabled={isSubmitting}
         >

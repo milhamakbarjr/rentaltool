@@ -6,7 +6,6 @@
 
 import { requireAuth } from '@/lib/auth/guards'
 import { getTranslations } from 'next-intl/server'
-import Link from 'next/link'
 import { ROUTES } from '@/utils/constants'
 import { CustomerList } from '@/features/customers/components/customer-list'
 import { Button } from '@/components/base/buttons/button'
@@ -34,14 +33,12 @@ export default async function CustomersPage() {
                 </div>
                 <div className="flex gap-3">
                   <Button
-                    asChild
-                    hierarchy="primary"
+                    href={`${ROUTES.CUSTOMERS}/new`}
+                    color="primary"
                     size="md"
+                    iconLeading={Plus}
                   >
-                    <Link href={`${ROUTES.CUSTOMERS}/new`}>
-                      <Plus className="h-5 w-5" />
-                      {t('addCustomer')}
-                    </Link>
+                    {t('addCustomer')}
                   </Button>
                 </div>
               </div>
