@@ -326,7 +326,7 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
               </svg>
               <h4 className="mt-2 text-sm font-semibold text-gray-900">No rental history</h4>
               <p className="mt-1 text-sm text-gray-500">
-                This customer hasn't made any rentals yet
+                This customer hasn&apos;t made any rentals yet
               </p>
             </div>
           )}
