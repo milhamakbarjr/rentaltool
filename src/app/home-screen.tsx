@@ -1,9 +1,8 @@
 "use client";
 
-import { BookOpen01, Check, Copy01, Cube01, HelpCircle } from "@untitledui/icons";
+import { Building02, Check, Copy01, HelpCircle, Key01, Users01 } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
-import { UntitledLogoMinimal } from "@/components/foundations/logo/untitledui-logo-minimal";
 import { useClipboard } from "@/hooks/use-clipboard";
 
 export const HomeScreen = () => {
@@ -13,17 +12,17 @@ export const HomeScreen = () => {
         <div className="flex h-dvh flex-col">
             <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4 md:px-8">
                 <div className="relative flex size-28 items-center justify-center">
-                    <UntitledLogoMinimal className="size-10" />
+                    <Building02 className="size-16 text-brand-solid" />
                 </div>
 
-                <h1 className="max-w-3xl text-center text-display-sm font-semibold text-primary">Untitled UI Next.js starter kit</h1>
+                <h1 className="max-w-3xl text-center text-display-sm font-semibold text-primary">Welcome to RentalTool</h1>
 
                 <p className="mt-2 max-w-xl text-center text-lg text-tertiary">
-                    Get started by using existing components that came with this starter kit or add new ones:
+                    A modern rental management platform built with Next.js, React, and TypeScript. Get started by running the development server:
                 </p>
 
                 <div className="relative mt-6 flex h-10 items-center rounded-lg border border-secondary bg-secondary">
-                    <code className="px-3 font-mono text-secondary">npx untitledui@latest add</code>
+                    <code className="px-3 font-mono text-secondary">npm run dev</code>
 
                     <hr className="h-10 w-px bg-border-secondary" />
 
@@ -33,42 +32,38 @@ export const HomeScreen = () => {
                         tooltip="Copy"
                         className="mx-1"
                         icon={clipboard.copied ? Check : Copy01}
-                        onClick={() => clipboard.copy("npx untitledui@latest add")}
+                        onClick={() => clipboard.copy("npm run dev")}
                     />
                 </div>
 
-                <div className="mt-6 flex items-center gap-3">
+                <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3 max-w-3xl w-full">
+                    <div className="flex flex-col items-center gap-3 p-6 rounded-lg border border-secondary bg-primary">
+                        <Building02 className="size-8 text-brand-solid" />
+                        <h3 className="font-semibold text-secondary">Property Management</h3>
+                        <p className="text-center text-sm text-tertiary">Manage your rental properties efficiently</p>
+                    </div>
+                    <div className="flex flex-col items-center gap-3 p-6 rounded-lg border border-secondary bg-primary">
+                        <Users01 className="size-8 text-brand-solid" />
+                        <h3 className="font-semibold text-secondary">Tenant Portal</h3>
+                        <p className="text-center text-sm text-tertiary">Streamline tenant communications</p>
+                    </div>
+                    <div className="flex flex-col items-center gap-3 p-6 rounded-lg border border-secondary bg-primary">
+                        <Key01 className="size-8 text-brand-solid" />
+                        <h3 className="font-semibold text-secondary">Lease Tracking</h3>
+                        <p className="text-center text-sm text-tertiary">Track rental agreements and payments</p>
+                    </div>
+                </div>
+
+                <div className="mt-8 flex items-center gap-3">
                     <Button
-                        href="https://www.untitledui.com/react/docs/introduction"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        color="link-color"
-                        size="lg"
-                        iconLeading={BookOpen01}
-                    >
-                        Docs
-                    </Button>
-                    <div className="h-px w-4 bg-brand-solid" />
-                    <Button
-                        href="https://www.untitledui.com/react/resources/icons"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        color="link-color"
-                        size="lg"
-                        iconLeading={Cube01}
-                    >
-                        Icons
-                    </Button>
-                    <div className="h-px w-4 bg-brand-solid" />
-                    <Button
-                        href="https://github.com/untitleduico/react/issues"
+                        href="https://github.com/milhamakbarjr/rentaltool"
                         target="_blank"
                         rel="noopener noreferrer"
                         color="link-color"
                         size="lg"
                         iconLeading={HelpCircle}
                     >
-                        Help
+                        Documentation
                     </Button>
                 </div>
             </div>

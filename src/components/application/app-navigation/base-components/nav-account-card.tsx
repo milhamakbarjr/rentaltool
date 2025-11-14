@@ -169,7 +169,9 @@ export const NavAccountCard = ({
     const selectedAccount = placeholderAccounts.find((account) => account.id === selectedAccountId);
 
     if (!selectedAccount) {
-        console.warn(`Account with ID ${selectedAccountId} not found in <NavAccountCard />`);
+        if (process.env.NODE_ENV === "development") {
+            console.warn(`Account with ID ${selectedAccountId} not found in <NavAccountCard />`);
+        }
         return null;
     }
 
