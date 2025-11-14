@@ -8,7 +8,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/base/buttons/button'
@@ -29,11 +29,18 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      fullName: '',
+      businessName: '',
+    },
   })
 
   const onSubmit = async (data: SignUpFormData) => {
@@ -132,50 +139,86 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <Form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmit(onSubmit)(e)
+          }}
+          className="flex flex-col gap-6"
+        >
           <div className="flex flex-col gap-5">
-            <Input
-              {...register('email')}
-              type="email"
-              placeholder={t('emailPlaceholder')}
-              size="md"
-              isRequired
-              isInvalid={!!errors.email}
-              hint={errors.email?.message}
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder={t('emailPlaceholder')}
+                  size="md"
+                  isRequired
+                  isInvalid={!!errors.email}
+                  hint={errors.email?.message}
+                />
+              )}
             />
-            <Input
-              {...register('fullName')}
-              type="text"
-              placeholder={t('fullNamePlaceholder')}
-              size="md"
-              isInvalid={!!errors.fullName}
-              hint={errors.fullName?.message}
+            <Controller
+              name="fullName"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder={t('fullNamePlaceholder')}
+                  size="md"
+                  isInvalid={!!errors.fullName}
+                  hint={errors.fullName?.message}
+                />
+              )}
             />
-            <Input
-              {...register('businessName')}
-              type="text"
-              placeholder={t('businessNamePlaceholder')}
-              size="md"
-              isInvalid={!!errors.businessName}
-              hint={errors.businessName?.message}
+            <Controller
+              name="businessName"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder={t('businessNamePlaceholder')}
+                  size="md"
+                  isInvalid={!!errors.businessName}
+                  hint={errors.businessName?.message}
+                />
+              )}
             />
-            <Input
-              {...register('password')}
-              type="password"
-              placeholder={t('passwordPlaceholder')}
-              size="md"
-              isRequired
-              isInvalid={!!errors.password}
-              hint={errors.password?.message || t('passwordHint')}
+            <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder={t('passwordPlaceholder')}
+                  size="md"
+                  isRequired
+                  isInvalid={!!errors.password}
+                  hint={errors.password?.message || t('passwordHint')}
+                />
+              )}
             />
-            <Input
-              {...register('confirmPassword')}
-              type="password"
-              placeholder={t('confirmPasswordPlaceholder')}
-              size="md"
-              isRequired
-              isInvalid={!!errors.confirmPassword}
-              hint={errors.confirmPassword?.message}
+            <Controller
+              name="confirmPassword"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder={t('confirmPasswordPlaceholder')}
+                  size="md"
+                  isRequired
+                  isInvalid={!!errors.confirmPassword}
+                  hint={errors.confirmPassword?.message}
+                />
+              )}
             />
           </div>
 
