@@ -26,7 +26,7 @@ export type CustomerFormData = z.infer<typeof customerSchema>
 export const customerFilterSchema = z.object({
   search: z.string().optional(),
   tag: z.string().optional(),
-  sort_by: z.enum(['name', 'created_at']).default('created_at'),
+  sort_by: z.enum(['full_name', 'created_at']).default('created_at'),
   sort_order: z.enum(['asc', 'desc']).default('desc'),
 })
 

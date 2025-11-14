@@ -166,11 +166,19 @@ export async function getRecentRentals(limit: number = 10) {
     .from('rentals')
     .select(`
       *,
-      customer:customers(id, name, email)
+      customer:customers(id, full_name, email)
     `)
     .order('created_at', { ascending: false })
     .limit(limit)
 
   if (error) throw error
-  return data
+
+  // Map database column names to frontend field names
+  return data?.map((rental: any) => ({
+    ...rental,
+    customer: rental.customer ? {
+      ...rental.customer,
+      name: rental.customer.full_name,
+    } : null
+  }))
 }

@@ -16,7 +16,7 @@ export async function getRentals(filters?: RentalFilterData) {
     .from('rentals')
     .select(`
       *,
-      customer:customers(id, name, email, phone),
+      customer:customers(id, full_name, email, phone_number),
       rental_items(
         id,
         quantity,
@@ -58,7 +58,17 @@ export async function getRentals(filters?: RentalFilterData) {
   const { data, error } = await query
 
   if (error) throw error
-  return data
+
+  // Map database column names to frontend field names
+  return data?.map((rental: any) => ({
+    ...rental,
+    customer: rental.customer ? {
+      id: rental.customer.id,
+      name: rental.customer.full_name,
+      email: rental.customer.email,
+      phone: rental.customer.phone_number,
+    } : null
+  }))
 }
 
 /**
@@ -70,7 +80,7 @@ export async function getRental(id: string) {
     .from('rentals')
     .select(`
       *,
-      customer:customers(id, name, email, phone, address),
+      customer:customers(id, full_name, email, phone_number, address),
       rental_items(
         id,
         inventory_item_id,
@@ -101,6 +111,21 @@ export async function getRental(id: string) {
     .single()
 
   if (error) throw error
+
+  // Map database column names to frontend field names
+  if (data && data.customer) {
+    return {
+      ...data,
+      customer: {
+        id: data.customer.id,
+        name: data.customer.full_name,
+        email: data.customer.email,
+        phone: data.customer.phone_number,
+        address: data.customer.address,
+      }
+    }
+  }
+
   return data
 }
 
