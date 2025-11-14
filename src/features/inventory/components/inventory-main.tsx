@@ -119,8 +119,8 @@ export const InventoryMain = () => {
                                     />
                                     <Button
                                         size="sm"
-                                        icon={Plus}
-                                        onPress={() => router.push(`${ROUTES.INVENTORY}/new`)}
+                                        iconLeading={Plus}
+                                        onClick={() => router.push(`${ROUTES.INVENTORY}/new`)}
                                     >
                                         <span className="max-md:hidden">Add Item</span>
                                         <span className="md:hidden">Add</span>
@@ -178,6 +178,8 @@ export const InventoryMain = () => {
                             subtitle="Total Items"
                             className="flex-1 md:min-w-[280px]"
                             type="simple"
+                            change="5.4%"
+                            changeTrend="positive"
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
                             chartData={generateMetricChartData(7)}
@@ -209,6 +211,8 @@ export const InventoryMain = () => {
                             subtitle="Total Value"
                             className="flex-1 md:min-w-[280px]"
                             type="simple"
+                            change="15.2%"
+                            changeTrend="positive"
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
                             chartData={generateMetricChartData(7)}
@@ -318,9 +322,9 @@ export const InventoryMain = () => {
                                     </p>
                                     <Button
                                         size="sm"
-                                        icon={Plus}
+                                        iconLeading={Plus}
                                         className="mt-4"
-                                        onPress={() => router.push(`${ROUTES.INVENTORY}/new`)}
+                                        onClick={() => router.push(`${ROUTES.INVENTORY}/new`)}
                                     >
                                         Add Item
                                     </Button>
