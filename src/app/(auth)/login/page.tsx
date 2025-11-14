@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/base/buttons/button'
-import { Checkbox } from '@/components/base/checkbox/checkbox'
 import { Form } from '@/components/base/form/form'
 import { Input } from '@/components/base/input/input'
 import { UntitledLogoMinimal } from '@/components/foundations/logo/untitledui-logo-minimal'
@@ -28,24 +27,20 @@ export default function LoginPage() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInFormData & { remember?: boolean }>({
+  } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',
-      remember: false,
     },
   })
 
-  const onSubmit = async (data: SignInFormData & { remember?: boolean }) => {
+  const onSubmit = async (data: SignInFormData) => {
     try {
       setError(null)
       setIsLoading(true)
 
-      const { error: signInError } = await signIn({
-        email: data.email,
-        password: data.password,
-      })
+      const { error: signInError } = await signIn(data)
 
       if (signInError) {
         setError(signInError.message)
@@ -67,8 +62,7 @@ export default function LoginPage() {
     <section className="min-h-screen bg-primary px-4 py-12 sm:bg-secondary md:px-8 md:pt-24">
       <div className="flex w-full flex-col gap-6 bg-primary sm:mx-auto sm:max-w-110 sm:rounded-2xl sm:px-10 sm:py-8 sm:shadow-sm">
         <div className="flex flex-col items-center gap-6 text-center">
-          <UntitledLogoMinimal className="size-12 max-md:hidden" />
-          <UntitledLogoMinimal className="size-10 md:hidden" />
+          <UntitledLogoMinimal className="size-10 md:size-12" />
           <div className="flex flex-col gap-2">
             <h1 className="text-display-xs font-semibold text-primary">Welcome back</h1>
             <p className="text-md text-tertiary">Please enter your details.</p>
@@ -96,6 +90,7 @@ export default function LoginPage() {
               render={({ field }) => (
                 <Input
                   {...field}
+                  label="Email"
                   isRequired
                   type="email"
                   placeholder="Enter your email"
@@ -111,6 +106,7 @@ export default function LoginPage() {
               render={({ field }) => (
                 <Input
                   {...field}
+                  label="Password"
                   isRequired
                   type="password"
                   size="md"
@@ -122,27 +118,15 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="flex items-center">
-            <Controller
-              name="remember"
-              control={control}
-              render={({ field: { value, onChange } }) => (
-                <Checkbox
-                  label="Remember for 30 days"
-                  isSelected={value}
-                  onChange={onChange}
-                />
-              )}
-            />
-
-            <Button color="link-color" size="md" href={ROUTES.RESET_PASSWORD} className="ml-auto">
+          <div className="flex items-center justify-end">
+            <Button color="link-color" size="md" href={ROUTES.RESET_PASSWORD}>
               Forgot password
             </Button>
           </div>
 
           <div className="flex flex-col gap-4">
-            <Button type="submit" size="lg" isDisabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign in'}
+            <Button type="submit" size="lg" isLoading={isLoading}>
+              Sign in
             </Button>
           </div>
         </Form>
