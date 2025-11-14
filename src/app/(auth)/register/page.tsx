@@ -12,7 +12,6 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/base/buttons/button'
-import { SocialButton } from '@/components/base/buttons/social-button'
 import { Form } from '@/components/base/form/form'
 import { Input } from '@/components/base/input/input'
 import { UntitledLogoMinimal } from '@/components/foundations/logo/untitledui-logo-minimal'
@@ -226,9 +225,6 @@ export default function RegisterPage() {
             <Button type="submit" size="lg" isDisabled={isLoading}>
               {isLoading ? tCommon('loading') : t('signUpButton')}
             </Button>
-            <SocialButton social="google" theme="color">
-              {t('signUpWithGoogle')}
-            </SocialButton>
           </div>
         </Form>
 
