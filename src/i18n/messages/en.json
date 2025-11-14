@@ -235,7 +235,36 @@
     "noRentalsFound": "No rentals found"
   },
   "analytics": {
-    "title": "Analytics"
+    "title": "Analytics",
+    "subtitle": "Track performance and gain insights into your rental business",
+    "totalRevenue": "Total Revenue",
+    "activeRentals": "Active Rentals",
+    "totalCustomers": "Total Customers",
+    "inventoryUtilization": "Inventory Utilization",
+    "revenueTrends": "Revenue Trends",
+    "topPerformingItems": "Top Performing Items",
+    "averageRevenuePerDay": "Avg Revenue/Day",
+    "averageRentalValue": "Average Rental Value",
+    "totalRentals": "Total Rentals",
+    "availableItems": "Available Items",
+    "byRevenue": "By Revenue",
+    "byFrequency": "By Frequency",
+    "itemName": "Item Name",
+    "rentals": "Rentals",
+    "revenue": "Revenue",
+    "performance": "Performance",
+    "excellent": "Excellent",
+    "good": "Good",
+    "average": "Average",
+    "noRevenueData": "No revenue data available for this period",
+    "noRentalData": "No rental data available yet",
+    "itemsGeneratingRevenue": "Items generating revenue",
+    "vsPreviousPeriod": "vs previous period",
+    "24hours": "24 hours",
+    "7days": "7 days",
+    "30days": "30 days",
+    "90days": "90 days",
+    "12months": "12 months"
   },
   "payments": {
     "title": "Payments"

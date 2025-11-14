@@ -17,12 +17,26 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Format number as currency
+ * @param amount - The amount to format
+ * @param shorthand - If true, uses compact notation (e.g., 1.2K, 1.5M)
+ * @param currency - Currency code (default: IDR)
+ * @param locale - Locale string (default: id-ID)
  */
 export function formatCurrency(
   amount: number,
+  shorthand: boolean = false,
   currency: string = 'IDR',
   locale: string = 'id-ID'
 ): string {
+  if (shorthand) {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(amount)
+  }
+
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
