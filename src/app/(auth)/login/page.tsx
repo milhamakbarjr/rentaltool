@@ -8,35 +8,44 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useTranslations } from 'next-intl'
+import { Button } from '@/components/base/buttons/button'
+import { Checkbox } from '@/components/base/checkbox/checkbox'
+import { Form } from '@/components/base/form/form'
+import { Input } from '@/components/base/input/input'
+import { UntitledLogoMinimal } from '@/components/foundations/logo/untitledui-logo-minimal'
 import { signIn } from '@/lib/auth/auth'
 import { signInSchema, type SignInFormData } from '@/lib/validations/auth'
 import { ROUTES } from '@/utils/constants'
 
 export default function LoginPage() {
   const router = useRouter()
-  const t = useTranslations('auth')
-  const tCommon = useTranslations('common')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInFormData>({
+  } = useForm<SignInFormData & { remember?: boolean }>({
     resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      remember: false,
+    },
   })
 
-  const onSubmit = async (data: SignInFormData) => {
+  const onSubmit = async (data: SignInFormData & { remember?: boolean }) => {
     try {
       setError(null)
       setIsLoading(true)
 
-      const { error: signInError } = await signIn(data)
+      const { error: signInError } = await signIn({
+        email: data.email,
+        password: data.password,
+      })
 
       if (signInError) {
         setError(signInError.message)
@@ -55,134 +64,96 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">{t('signIn')}</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          {t('dontHaveAccount')}{' '}
-          <Link href={ROUTES.REGISTER} className="font-medium text-purple-600 hover:text-purple-500">
-            {t('signUp')}
-          </Link>
-        </p>
-      </div>
+    <section className="min-h-screen bg-primary px-4 py-12 sm:bg-secondary md:px-8 md:pt-24">
+      <div className="flex w-full flex-col gap-6 bg-primary sm:mx-auto sm:max-w-110 sm:rounded-2xl sm:px-10 sm:py-8 sm:shadow-sm">
+        <div className="flex flex-col items-center gap-6 text-center">
+          <UntitledLogoMinimal className="size-12 max-md:hidden" />
+          <UntitledLogoMinimal className="size-10 md:hidden" />
+          <div className="flex flex-col gap-2">
+            <h1 className="text-display-xs font-semibold text-primary">Welcome back</h1>
+            <p className="text-md text-tertiary">Please enter your details.</p>
+          </div>
+        </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="rounded-md bg-red-50 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-red-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                  clipRule="evenodd"
+        {/* Error Message */}
+        {error && (
+          <div className="rounded-lg bg-error-secondary p-4">
+            <p className="text-sm font-medium text-error-primary">{error}</p>
+          </div>
+        )}
+
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmit(onSubmit)(e)
+          }}
+          className="flex flex-col gap-6"
+        >
+          <div className="flex flex-col gap-5">
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  isRequired
+                  type="email"
+                  placeholder="Enter your email"
+                  size="md"
+                  isInvalid={!!errors.email}
+                  hint={errors.email?.message}
                 />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-red-800">{error}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Login Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Email Field */}
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            {t('email')}
-          </label>
-          <div className="mt-1">
-            <input
-              {...register('email')}
-              id="email"
-              type="email"
-              autoComplete="email"
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
-              placeholder="you@example.com"
+              )}
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Password Field */}
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            {t('password')}
-          </label>
-          <div className="mt-1">
-            <input
-              {...register('password')}
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
-              placeholder="••••••••"
+            <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  isRequired
+                  type="password"
+                  size="md"
+                  placeholder="••••••••"
+                  isInvalid={!!errors.password}
+                  hint={errors.password?.message}
+                />
+              )}
             />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-            )}
           </div>
-        </div>
 
-        {/* Forgot Password Link */}
-        <div className="flex items-center justify-end">
-          <div className="text-sm">
-            <Link
-              href={ROUTES.RESET_PASSWORD}
-              className="font-medium text-purple-600 hover:text-purple-500"
-            >
-              {t('forgotPassword')}
-            </Link>
+          <div className="flex items-center">
+            <Controller
+              name="remember"
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <Checkbox
+                  label="Remember for 30 days"
+                  isSelected={value}
+                  onChange={onChange}
+                />
+              )}
+            />
+
+            <Button color="link-color" size="md" href={ROUTES.RESET_PASSWORD} className="ml-auto">
+              Forgot password
+            </Button>
           </div>
-        </div>
 
-        {/* Submit Button */}
-        <div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex w-full justify-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isLoading ? (
-              <span className="flex items-center">
-                <svg
-                  className="mr-2 h-4 w-4 animate-spin text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                {tCommon('loading')}
-              </span>
-            ) : (
-              t('signInButton')
-            )}
-          </button>
+          <div className="flex flex-col gap-4">
+            <Button type="submit" size="lg" isDisabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </div>
+        </Form>
+
+        <div className="flex justify-center gap-1 text-center">
+          <span className="text-sm text-tertiary">Don&apos;t have an account?</span>
+          <Button color="link-color" size="md" href={ROUTES.REGISTER}>
+            Sign up
+          </Button>
         </div>
-      </form>
-    </div>
+      </div>
+    </section>
   )
 }
