@@ -16,9 +16,9 @@ import { Dialog, Modal, ModalOverlay } from '@/components/application/modals/mod
 import { Carousel, CarouselContext } from '@/components/application/carousel/carousel-base'
 import { Button } from '@/components/base/buttons/button'
 import { CloseButton } from '@/components/base/buttons/close-button'
-import { Input, InputBase } from '@/components/base/input/input'
-import { InputGroup } from '@/components/base/input/input-group'
+import { Input } from '@/components/base/input/input'
 import { Label } from '@/components/base/input/label'
+import { CurrencyInput } from '@/components/base/input/currency-input'
 import { Select } from '@/components/base/select/select'
 import { TextAreaBase } from '@/components/base/textarea/textarea'
 import { FeaturedIcon } from '@/components/foundations/featured-icon/featured-icon'
@@ -295,21 +295,13 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="pricing.hourly"
                         control={control}
                         render={({ field }) => (
-                          <InputGroup
+                          <CurrencyInput
                             size="md"
                             label="Hourly Rate"
-                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
-                          >
-                            <InputBase
-                              type="number"
-                              placeholder="0"
-                              value={String(field.value ?? '')}
-                              onChange={(value) => {
-                                const numValue = value === '' ? null : Number(value)
-                                field.onChange(isNaN(numValue as number) ? null : numValue)
-                              }}
-                            />
-                          </InputGroup>
+                            placeholder="0"
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         )}
                       />
                     </div>
@@ -320,21 +312,13 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="pricing.daily"
                         control={control}
                         render={({ field }) => (
-                          <InputGroup
+                          <CurrencyInput
                             size="md"
                             label="Daily Rate"
-                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
-                          >
-                            <InputBase
-                              type="number"
-                              placeholder="0"
-                              value={String(field.value ?? '')}
-                              onChange={(value) => {
-                                const numValue = value === '' ? null : Number(value)
-                                field.onChange(isNaN(numValue as number) ? null : numValue)
-                              }}
-                            />
-                          </InputGroup>
+                            placeholder="0"
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         )}
                       />
                     </div>
@@ -345,21 +329,13 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="pricing.weekly"
                         control={control}
                         render={({ field }) => (
-                          <InputGroup
+                          <CurrencyInput
                             size="md"
                             label="Weekly Rate"
-                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
-                          >
-                            <InputBase
-                              type="number"
-                              placeholder="0"
-                              value={String(field.value ?? '')}
-                              onChange={(value) => {
-                                const numValue = value === '' ? null : Number(value)
-                                field.onChange(isNaN(numValue as number) ? null : numValue)
-                              }}
-                            />
-                          </InputGroup>
+                            placeholder="0"
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         )}
                       />
                     </div>
@@ -370,21 +346,13 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="pricing.monthly"
                         control={control}
                         render={({ field }) => (
-                          <InputGroup
+                          <CurrencyInput
                             size="md"
                             label="Monthly Rate"
-                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
-                          >
-                            <InputBase
-                              type="number"
-                              placeholder="0"
-                              value={String(field.value ?? '')}
-                              onChange={(value) => {
-                                const numValue = value === '' ? null : Number(value)
-                                field.onChange(isNaN(numValue as number) ? null : numValue)
-                              }}
-                            />
-                          </InputGroup>
+                            placeholder="0"
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         )}
                       />
                     </div>
@@ -404,21 +372,13 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="deposit_required"
                         control={control}
                         render={({ field }) => (
-                          <InputGroup
+                          <CurrencyInput
                             size="md"
                             label="Deposit Required"
-                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
-                          >
-                            <InputBase
-                              type="number"
-                              placeholder="0"
-                              value={String(field.value ?? '')}
-                              onChange={(value) => {
-                                const numValue = value === '' ? 0 : Number(value)
-                                field.onChange(isNaN(numValue) ? 0 : numValue)
-                              }}
-                            />
-                          </InputGroup>
+                            placeholder="0"
+                            value={field.value}
+                            onChange={(value) => field.onChange(value ?? 0)}
+                          />
                         )}
                       />
                     </div>
@@ -452,21 +412,13 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="purchase_cost"
                         control={control}
                         render={({ field }) => (
-                          <InputGroup
+                          <CurrencyInput
                             size="md"
                             label="Purchase Cost"
-                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
-                          >
-                            <InputBase
-                              type="number"
-                              placeholder="0"
-                              value={String(field.value ?? '')}
-                              onChange={(value) => {
-                                const numValue = value === '' ? null : Number(value)
-                                field.onChange(isNaN(numValue as number) ? null : numValue)
-                              }}
-                            />
-                          </InputGroup>
+                            placeholder="0"
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         )}
                       />
                     </div>
