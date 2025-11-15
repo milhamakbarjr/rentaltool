@@ -124,7 +124,7 @@ export function CustomerList() {
             selectedKey={filters.tag || ''}
             onSelectionChange={(key) => setFilters({ ...filters, tag: key as string })}
           >
-            <Select.Item id="" textValue={t('allTags')}>
+            <Select.Item id="all" textValue={t('allTags')}>
               {t('allTags')}
             </Select.Item>
             {tags.map((tag) => (
