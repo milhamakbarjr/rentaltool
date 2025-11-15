@@ -67,15 +67,15 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
     control,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<InventoryItemFormData>({
+  } = useForm({
     resolver: zodResolver(inventoryItemSchema),
     defaultValues: {
       name: '',
       description: '',
       category_id: '',
       quantity_total: 1,
-      condition: 'good',
-      status: 'available',
+      condition: 'good' as const,
+      status: 'available' as const,
       pricing: {
         hourly: null,
         daily: null,
@@ -161,7 +161,7 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                     options={tabs.map((tab) => ({ label: tab.label, value: tab.id }))}
                     className="w-full md:hidden"
                   />
-                  <Tabs selectedKey={selectedTab} onSelectionChange={setSelectedTab} className="w-full max-md:hidden">
+                  <Tabs selectedKey={selectedTab as string} onSelectionChange={setSelectedTab} className="w-full max-md:hidden">
                     <Tabs.List type="button-minimal" items={tabs}>
                       {(tab) => <Tabs.Item {...tab} />}
                     </Tabs.List>
@@ -176,12 +176,20 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                     <div className="grid w-full grid-cols-1 items-start justify-start gap-4 sm:grid-cols-2">
                       {/* Name */}
                       <div className="sm:col-span-2">
-                        <Input
-                          size="md"
-                          label="Item Name *"
-                          placeholder="e.g., Power Drill"
-                          error={errors.name?.message}
-                          {...register('name')}
+                        <Controller
+                          name="name"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              size="md"
+                              label="Item Name *"
+                              placeholder="e.g., Power Drill"
+                              hint={errors.name?.message}
+                              isInvalid={!!errors.name}
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
+                          )}
                         />
                       </div>
 
@@ -206,7 +214,8 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                           control={control}
                           render={({ field }) => (
                             <NativeSelect
-                              {...field}
+                              value={field.value || ''}
+                              onChange={field.onChange}
                               options={[
                                 { label: 'No category', value: '' },
                                 ...(categories?.map((cat) => ({
@@ -222,13 +231,21 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
 
                       {/* Quantity */}
                       <div className="sm:col-span-1">
-                        <Input
-                          size="md"
-                          type="number"
-                          label="Quantity *"
-                          placeholder="1"
-                          error={errors.quantity_total?.message}
-                          {...register('quantity_total', { valueAsNumber: true })}
+                        <Controller
+                          name="quantity_total"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              size="md"
+                              type="number"
+                              label="Quantity *"
+                              placeholder="1"
+                              hint={errors.quantity_total?.message}
+                              isInvalid={!!errors.quantity_total}
+                              value={field.value?.toString() || ''}
+                              onChange={(value) => field.onChange(parseInt(value) || 0)}
+                            />
+                          )}
                         />
                       </div>
 
@@ -266,66 +283,90 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
 
                       {/* Hourly Rate */}
                       <div className="sm:col-span-1">
-                        <InputGroup
-                          size="md"
-                          label="Hourly Rate"
-                          leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                        >
-                          <InputBase
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            {...register('pricing.hourly', { valueAsNumber: true })}
-                          />
-                        </InputGroup>
+                        <Controller
+                          name="pricing.hourly"
+                          control={control}
+                          render={({ field }) => (
+                            <InputGroup
+                              size="md"
+                              label="Hourly Rate"
+                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
+                            >
+                              <InputBase
+                                type="number"
+                                placeholder="0.00"
+                                value={field.value?.toString() || ''}
+                                onChange={(value) => field.onChange(parseFloat(value) || null)}
+                              />
+                            </InputGroup>
+                          )}
+                        />
                       </div>
 
                       {/* Daily Rate */}
                       <div className="sm:col-span-1">
-                        <InputGroup
-                          size="md"
-                          label="Daily Rate"
-                          leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                        >
-                          <InputBase
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            {...register('pricing.daily', { valueAsNumber: true })}
-                          />
-                        </InputGroup>
+                        <Controller
+                          name="pricing.daily"
+                          control={control}
+                          render={({ field }) => (
+                            <InputGroup
+                              size="md"
+                              label="Daily Rate"
+                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
+                            >
+                              <InputBase
+                                type="number"
+                                placeholder="0.00"
+                                value={field.value?.toString() || ''}
+                                onChange={(value) => field.onChange(parseFloat(value) || null)}
+                              />
+                            </InputGroup>
+                          )}
+                        />
                       </div>
 
                       {/* Weekly Rate */}
                       <div className="sm:col-span-1">
-                        <InputGroup
-                          size="md"
-                          label="Weekly Rate"
-                          leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                        >
-                          <InputBase
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            {...register('pricing.weekly', { valueAsNumber: true })}
-                          />
-                        </InputGroup>
+                        <Controller
+                          name="pricing.weekly"
+                          control={control}
+                          render={({ field }) => (
+                            <InputGroup
+                              size="md"
+                              label="Weekly Rate"
+                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
+                            >
+                              <InputBase
+                                type="number"
+                                placeholder="0.00"
+                                value={field.value?.toString() || ''}
+                                onChange={(value) => field.onChange(parseFloat(value) || null)}
+                              />
+                            </InputGroup>
+                          )}
+                        />
                       </div>
 
                       {/* Monthly Rate */}
                       <div className="sm:col-span-1">
-                        <InputGroup
-                          size="md"
-                          label="Monthly Rate"
-                          leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                        >
-                          <InputBase
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            {...register('pricing.monthly', { valueAsNumber: true })}
-                          />
-                        </InputGroup>
+                        <Controller
+                          name="pricing.monthly"
+                          control={control}
+                          render={({ field }) => (
+                            <InputGroup
+                              size="md"
+                              label="Monthly Rate"
+                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
+                            >
+                              <InputBase
+                                type="number"
+                                placeholder="0.00"
+                                value={field.value?.toString() || ''}
+                                onChange={(value) => field.onChange(parseFloat(value) || null)}
+                              />
+                            </InputGroup>
+                          )}
+                        />
                       </div>
 
                       {errors.pricing && (
@@ -340,55 +381,82 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                     <div className="grid w-full grid-cols-1 items-start justify-start gap-4 sm:grid-cols-2">
                       {/* Deposit Required */}
                       <div className="sm:col-span-1">
-                        <InputGroup
-                          size="md"
-                          label="Deposit Required"
-                          leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                        >
-                          <InputBase
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            {...register('deposit_required', { valueAsNumber: true })}
-                          />
-                        </InputGroup>
+                        <Controller
+                          name="deposit_required"
+                          control={control}
+                          render={({ field }) => (
+                            <InputGroup
+                              size="md"
+                              label="Deposit Required"
+                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
+                            >
+                              <InputBase
+                                type="number"
+                                placeholder="0.00"
+                                value={field.value?.toString() || ''}
+                                onChange={(value) => field.onChange(parseFloat(value) || 0)}
+                              />
+                            </InputGroup>
+                          )}
+                        />
                       </div>
 
                       {/* Minimum Rental Period */}
                       <div className="sm:col-span-1">
-                        <Input
-                          size="md"
-                          type="number"
-                          label="Minimum Rental Period (hours)"
-                          placeholder="24"
-                          error={errors.minimum_rental_period?.message}
-                          {...register('minimum_rental_period', { valueAsNumber: true })}
+                        <Controller
+                          name="minimum_rental_period"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              size="md"
+                              type="number"
+                              label="Minimum Rental Period (hours)"
+                              placeholder="24"
+                              hint={errors.minimum_rental_period?.message}
+                              isInvalid={!!errors.minimum_rental_period}
+                              value={field.value?.toString() || ''}
+                              onChange={(value) => field.onChange(parseInt(value) || 0)}
+                            />
+                          )}
                         />
                       </div>
 
                       {/* Purchase Cost */}
                       <div className="sm:col-span-1">
-                        <InputGroup
-                          size="md"
-                          label="Purchase Cost"
-                          leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                        >
-                          <InputBase
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            {...register('purchase_cost', { valueAsNumber: true })}
-                          />
-                        </InputGroup>
+                        <Controller
+                          name="purchase_cost"
+                          control={control}
+                          render={({ field }) => (
+                            <InputGroup
+                              size="md"
+                              label="Purchase Cost"
+                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
+                            >
+                              <InputBase
+                                type="number"
+                                placeholder="0.00"
+                                value={field.value?.toString() || ''}
+                                onChange={(value) => field.onChange(parseFloat(value) || null)}
+                              />
+                            </InputGroup>
+                          )}
+                        />
                       </div>
 
                       {/* Purchase Date */}
                       <div className="sm:col-span-1">
-                        <Input
-                          size="md"
-                          type="date"
-                          label="Purchase Date"
-                          {...register('purchase_date')}
+                        <Controller
+                          name="purchase_date"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              size="md"
+                              type="date"
+                              label="Purchase Date"
+                              value={field.value || ''}
+                              onChange={field.onChange}
+                            />
+                          )}
                         />
                       </div>
                     </div>
