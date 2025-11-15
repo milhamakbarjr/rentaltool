@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { SearchLg, Plus } from "@untitledui/icons";
 import type { SortDescriptor } from "react-aria-components";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/base/input/input";
 import { Button } from "@/components/base/buttons/button";
 import { MetricsChart04 } from "@/components/application/metrics/metrics";
@@ -45,6 +46,7 @@ const formatDate = (dateString: string | null): string => {
 };
 
 export const InventoryMain = () => {
+    const t = useTranslations("inventory");
     const router = useRouter();
     const [selectedTab, setSelectedTab] = useState<string>("all");
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>();
@@ -81,13 +83,6 @@ export const InventoryMain = () => {
         return items;
     }, [items]);
 
-    // Generate simple chart data for metrics
-    const generateMetricChartData = (points: number) => {
-        return Array.from({ length: points }, (_, i) => ({
-            value: Math.floor(Math.random() * 5) + 3,
-        }));
-    };
-
     // Calculate utilization rate
     const utilizationRate = stats?.total_items
         ? Math.round((stats.rented_items / stats.total_items) * 100)
@@ -102,17 +97,17 @@ export const InventoryMain = () => {
                         <div className="relative flex flex-col gap-5 bg-primary">
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                                 <div className="flex flex-1 flex-col gap-1">
-                                    <h1 className="text-display-sm font-semibold text-primary">Inventory</h1>
+                                    <h1 className="text-display-sm font-semibold text-primary">{t("title")}</h1>
                                     <p className="text-md text-tertiary">
-                                        Manage your rental items and track performance
+                                        {t("subtitle")}
                                     </p>
                                 </div>
                                 <div className="flex gap-3">
                                     <Input
                                         className="md:w-80"
                                         size="sm"
-                                        aria-label="Search inventory"
-                                        placeholder="Search items..."
+                                        aria-label={t("searchInventory")}
+                                        placeholder={t("searchPlaceholder")}
                                         icon={SearchLg}
                                         value={searchQuery}
                                         onChange={(value) => setSearchQuery(value)}
@@ -122,8 +117,8 @@ export const InventoryMain = () => {
                                         iconLeading={Plus}
                                         onClick={() => router.push(`${ROUTES.INVENTORY}/new`)}
                                     >
-                                        <span className="max-md:hidden">Add Item</span>
-                                        <span className="md:hidden">Add</span>
+                                        <span className="max-md:hidden">{t("addItem")}</span>
+                                        <span className="md:hidden">{t("add")}</span>
                                     </Button>
                                 </div>
                             </div>
@@ -139,10 +134,10 @@ export const InventoryMain = () => {
                                 <TabList
                                     type="button-minimal"
                                     items={[
-                                        { id: "all", label: "All items" },
-                                        { id: "available", label: "Available" },
-                                        { id: "rented", label: "Rented" },
-                                        { id: "maintenance", label: "Maintenance" },
+                                        { id: "all", label: t("allItems") },
+                                        { id: "available", label: t("available") },
+                                        { id: "rented", label: t("rented") },
+                                        { id: "maintenance", label: t("maintenance") },
                                     ]}
                                 />
                             </Tabs>
@@ -150,11 +145,11 @@ export const InventoryMain = () => {
                             {categories && categories.length > 0 && (
                                 <Select
                                     size="sm"
-                                    placeholder="All Categories"
+                                    placeholder={t("allCategories")}
                                     selectedKey={selectedCategory}
                                     onSelectionChange={(key) => setSelectedCategory(key as string)}
                                     items={[
-                                        { id: "", label: "All Categories" },
+                                        { id: "", label: t("allCategories") },
                                         ...categories.map((cat) => ({
                                             id: cat.id,
                                             label: `${cat.icon || ""} ${cat.name}`,
@@ -175,47 +170,47 @@ export const InventoryMain = () => {
                     <div className="mx-auto flex w-full max-w-container flex-col gap-5 px-4 md:flex-row md:flex-wrap lg:gap-6 lg:px-8">
                         <MetricsChart04
                             title={String(stats?.total_items || 0)}
-                            subtitle="Total Items"
+                            subtitle={t("totalItems")}
                             className="flex-1 md:min-w-[280px]"
                             type="simple"
-                            change="5.4%"
+                            change="0%"
                             changeTrend="positive"
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
-                            chartData={generateMetricChartData(7)}
+                            chartData={[]}
                         />
                         <MetricsChart04
                             title={String(stats?.available_items || 0)}
-                            subtitle="Available"
+                            subtitle={t("available")}
                             className="flex-1 md:min-w-[280px]"
                             type="simple"
-                            change="12.5%"
+                            change="0%"
                             changeTrend="positive"
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
-                            chartData={generateMetricChartData(7)}
+                            chartData={[]}
                         />
                         <MetricsChart04
                             title={`${utilizationRate}%`}
-                            subtitle="Utilization Rate"
+                            subtitle={t("utilizationRate")}
                             className="flex-1 md:min-w-[280px]"
                             type="simple"
-                            change="8.2%"
+                            change="0%"
                             changeTrend="positive"
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
-                            chartData={generateMetricChartData(7)}
+                            chartData={[]}
                         />
                         <MetricsChart04
                             title={formatCurrency(stats?.total_value || 0)}
-                            subtitle="Total Value"
+                            subtitle={t("totalValue")}
                             className="flex-1 md:min-w-[280px]"
                             type="simple"
-                            change="15.2%"
+                            change="0%"
                             changeTrend="positive"
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
-                            chartData={generateMetricChartData(7)}
+                            chartData={[]}
                         />
                     </div>
 
@@ -223,7 +218,7 @@ export const InventoryMain = () => {
                     <div className="mx-auto flex w-full max-w-container flex-col gap-6 px-4 lg:px-8">
                         <TableCard.Root className="bg-secondary_subtle shadow-xs lg:rounded-xl">
                             <div className="flex gap-4 px-5 pt-3 pb-2.5">
-                                <p className="text-sm font-semibold text-primary">Inventory Items</p>
+                                <p className="text-sm font-semibold text-primary">{t("inventoryItems")}</p>
                             </div>
 
                             {!isLoading && sortedItems && sortedItems.length > 0 ? (
@@ -316,9 +311,9 @@ export const InventoryMain = () => {
                                             />
                                         </svg>
                                     </div>
-                                    <h3 className="mt-4 text-sm font-medium text-primary">No inventory items</h3>
+                                    <h3 className="mt-4 text-sm font-medium text-primary">{t("noItems")}</h3>
                                     <p className="mt-2 text-center text-sm text-tertiary">
-                                        Get started by adding your first inventory item.
+                                        {t("noItemsDescription")}
                                     </p>
                                     <Button
                                         size="sm"
