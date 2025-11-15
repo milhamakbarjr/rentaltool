@@ -33,6 +33,7 @@ const getInitials = (name: string) => {
 
 export function CustomerList() {
   const t = useTranslations('customers')
+  const tCommon = useTranslations('common')
   const router = useRouter()
   const [filters, setFilters] = useState<CustomerFilterData>({
     sort_by: 'created_at',
@@ -98,7 +99,7 @@ export function CustomerList() {
   if (error) {
     return (
       <div className="rounded-lg bg-utility-error-50 p-4">
-        <p className="text-sm text-utility-error-700">{t('errorLoading')}</p>
+        <p className="text-sm text-utility-error-700">{tCommon('error')}</p>
       </div>
     )
   }
@@ -124,7 +125,7 @@ export function CustomerList() {
             selectedKey={filters.tag || ''}
             onSelectionChange={(key) => setFilters({ ...filters, tag: key as string })}
           >
-            <Select.Item id="" textValue={t('allTags')}>
+            <Select.Item id="all" textValue={t('allTags')}>
               {t('allTags')}
             </Select.Item>
             {tags.map((tag) => (
