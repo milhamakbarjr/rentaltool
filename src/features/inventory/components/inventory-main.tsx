@@ -17,6 +17,7 @@ import { useInventoryItems, useCategories, useInventoryStats } from "../hooks/us
 import { formatCurrency } from "@/lib/utils";
 import { ROUTES, ITEM_CONDITION_LABELS } from "@/utils/constants";
 import type { InventoryFilterData } from "../schemas/inventory-schema";
+import { InventoryAddModal } from "./inventory-add-modal";
 
 // Helper to get status badge color
 const getStatusColor = (status: string) => {
@@ -52,6 +53,7 @@ export const InventoryMain = () => {
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>();
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     // Build filters based on UI state
     const filters: InventoryFilterData = useMemo(() => {
@@ -115,7 +117,7 @@ export const InventoryMain = () => {
                                     <Button
                                         size="sm"
                                         iconLeading={Plus}
-                                        onClick={() => router.push(`${ROUTES.INVENTORY}/new`)}
+                                        onClick={() => setIsAddModalOpen(true)}
                                     >
                                         <span className="max-md:hidden">{t("addItem")}</span>
                                         <span className="md:hidden">{t("add")}</span>
@@ -319,7 +321,7 @@ export const InventoryMain = () => {
                                         size="sm"
                                         iconLeading={Plus}
                                         className="mt-4"
-                                        onClick={() => router.push(`${ROUTES.INVENTORY}/new`)}
+                                        onClick={() => setIsAddModalOpen(true)}
                                     >
                                         Add Item
                                     </Button>
@@ -329,6 +331,9 @@ export const InventoryMain = () => {
                     </div>
                 </div>
             </main>
+
+            {/* Add Item Modal */}
+            <InventoryAddModal isOpen={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
         </div>
     );
 };
