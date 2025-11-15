@@ -263,11 +263,16 @@ export function formatIndonesianNumber(value: number | null | undefined): string
  * @param value - Formatted string (e.g., "1.000.000" or "1.000.000,50")
  * @returns Number value
  */
-export function parseIndonesianNumber(value: string): number | null {
-  if (!value || value.trim() === '') return null
+export function parseIndonesianNumber(value: string | number | null | undefined): number | null {
+  // Handle non-string values
+  if (value === null || value === undefined) return null
+  if (typeof value === 'number') return value
+
+  const strValue = String(value).trim()
+  if (strValue === '') return null
 
   // Remove dots (thousand separators) and replace comma (decimal separator) with dot
-  const cleaned = value.replace(/\./g, '').replace(',', '.')
+  const cleaned = strValue.replace(/\./g, '').replace(',', '.')
   const parsed = Number(cleaned)
 
   return isNaN(parsed) ? null : parsed
