@@ -212,8 +212,8 @@ export const AnalyticsMain = ({ userName, userEmail, userAvatarUrl }: AnalyticsM
                     subtitle={t("totalRevenue")}
                     className="flex-1 md:min-w-[320px]"
                     type="simple"
-                    change={metricsComparison?.revenue.trend !== 'neutral' ? metricsComparison?.revenue.value || "0%" : "0%"}
-                    changeTrend={metricsComparison?.revenue.trend !== 'neutral' ? (metricsComparison?.revenue.trend as 'positive' | 'negative') : "positive"}
+                    change={metricsComparison && metricsComparison.revenue.trend !== 'neutral' ? metricsComparison.revenue.value : "0%"}
+                    changeTrend={metricsComparison && metricsComparison.revenue.trend !== 'neutral' ? (metricsComparison.revenue.trend as 'positive' | 'negative') : "positive"}
                     chartColor="text-fg-brand-secondary"
                     chartAreaFill="none"
                     chartData={[]}
@@ -223,8 +223,8 @@ export const AnalyticsMain = ({ userName, userEmail, userAvatarUrl }: AnalyticsM
                     subtitle={t("activeRentals")}
                     className="flex-1 md:min-w-[320px]"
                     type="simple"
-                    change={metricsComparison?.activeRentals.trend !== 'neutral' ? metricsComparison?.activeRentals.value || "0%" : "0%"}
-                    changeTrend={metricsComparison?.activeRentals.trend !== 'neutral' ? (metricsComparison?.activeRentals.trend as 'positive' | 'negative') : "positive"}
+                    change={metricsComparison && metricsComparison.activeRentals.trend !== 'neutral' ? metricsComparison.activeRentals.value : "0%"}
+                    changeTrend={metricsComparison && metricsComparison.activeRentals.trend !== 'neutral' ? (metricsComparison.activeRentals.trend as 'positive' | 'negative') : "positive"}
                     chartColor="text-fg-brand-secondary"
                     chartAreaFill="none"
                     chartData={[]}
@@ -234,8 +234,8 @@ export const AnalyticsMain = ({ userName, userEmail, userAvatarUrl }: AnalyticsM
                     subtitle={t("totalCustomers")}
                     className="flex-1 md:min-w-[320px]"
                     type="simple"
-                    change={metricsComparison?.customers.trend !== 'neutral' ? metricsComparison?.customers.value || "0%" : "0%"}
-                    changeTrend={metricsComparison?.customers.trend !== 'neutral' ? (metricsComparison?.customers.trend as 'positive' | 'negative') : "positive"}
+                    change={metricsComparison && metricsComparison.customers.trend !== 'neutral' ? metricsComparison.customers.value : "0%"}
+                    changeTrend={metricsComparison && metricsComparison.customers.trend !== 'neutral' ? (metricsComparison.customers.trend as 'positive' | 'negative') : "positive"}
                     chartColor="text-fg-brand-secondary"
                     chartAreaFill="none"
                     chartData={[]}
