@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Package, ArrowLeft } from '@untitledui/icons'
+import { Package } from '@untitledui/icons'
 import { DialogTrigger as AriaDialogTrigger, Heading as AriaHeading } from 'react-aria-components'
 import { Dialog, Modal, ModalOverlay } from '@/components/application/modals/modal'
 import { Carousel, CarouselContext } from '@/components/application/carousel/carousel-base'
@@ -232,8 +232,11 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             placeholder="1"
                             hint={errors.quantity_total?.message}
                             isInvalid={!!errors.quantity_total}
-                            value={field.value?.toString() || ''}
-                            onChange={(value) => field.onChange(parseInt(value) || 1)}
+                            value={String(field.value ?? '')}
+                            onChange={(value) => {
+                              const numValue = value === '' ? 1 : parseInt(value)
+                              field.onChange(isNaN(numValue) ? 1 : numValue)
+                            }}
                           />
                         )}
                       />
@@ -300,8 +303,11 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             <InputBase
                               type="number"
                               placeholder="0"
-                              value={field.value?.toString() || ''}
-                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
+                              value={String(field.value ?? '')}
+                              onChange={(value) => {
+                                const numValue = value === '' ? null : Number(value)
+                                field.onChange(isNaN(numValue as number) ? null : numValue)
+                              }}
                             />
                           </InputGroup>
                         )}
@@ -322,8 +328,11 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             <InputBase
                               type="number"
                               placeholder="0"
-                              value={field.value?.toString() || ''}
-                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
+                              value={String(field.value ?? '')}
+                              onChange={(value) => {
+                                const numValue = value === '' ? null : Number(value)
+                                field.onChange(isNaN(numValue as number) ? null : numValue)
+                              }}
                             />
                           </InputGroup>
                         )}
@@ -344,8 +353,11 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             <InputBase
                               type="number"
                               placeholder="0"
-                              value={field.value?.toString() || ''}
-                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
+                              value={String(field.value ?? '')}
+                              onChange={(value) => {
+                                const numValue = value === '' ? null : Number(value)
+                                field.onChange(isNaN(numValue as number) ? null : numValue)
+                              }}
                             />
                           </InputGroup>
                         )}
@@ -366,8 +378,11 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             <InputBase
                               type="number"
                               placeholder="0"
-                              value={field.value?.toString() || ''}
-                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
+                              value={String(field.value ?? '')}
+                              onChange={(value) => {
+                                const numValue = value === '' ? null : Number(value)
+                                field.onChange(isNaN(numValue as number) ? null : numValue)
+                              }}
                             />
                           </InputGroup>
                         )}
@@ -397,8 +412,11 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             <InputBase
                               type="number"
                               placeholder="0"
-                              value={field.value?.toString() || ''}
-                              onChange={(value) => field.onChange(value ? parseFloat(value) : 0)}
+                              value={String(field.value ?? '')}
+                              onChange={(value) => {
+                                const numValue = value === '' ? 0 : Number(value)
+                                field.onChange(isNaN(numValue) ? 0 : numValue)
+                              }}
                             />
                           </InputGroup>
                         )}
@@ -418,8 +436,11 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             placeholder="24"
                             hint={errors.minimum_rental_period?.message}
                             isInvalid={!!errors.minimum_rental_period}
-                            value={field.value?.toString() || ''}
-                            onChange={(value) => field.onChange(value ? parseInt(value) : 24)}
+                            value={String(field.value ?? '')}
+                            onChange={(value) => {
+                              const numValue = value === '' ? 24 : parseInt(value)
+                              field.onChange(isNaN(numValue) ? 24 : numValue)
+                            }}
                           />
                         )}
                       />
@@ -439,8 +460,11 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             <InputBase
                               type="number"
                               placeholder="0"
-                              value={field.value?.toString() || ''}
-                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
+                              value={String(field.value ?? '')}
+                              onChange={(value) => {
+                                const numValue = value === '' ? null : Number(value)
+                                field.onChange(isNaN(numValue as number) ? null : numValue)
+                              }}
                             />
                           </InputGroup>
                         )}
@@ -474,7 +498,6 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         type="button"
                         size="lg"
                         color="secondary"
-                        iconLeading={context?.canScrollPrev ? ArrowLeft : undefined}
                         onClick={() => {
                           if (context?.canScrollPrev) {
                             context.scrollPrev()
