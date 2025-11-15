@@ -13,8 +13,9 @@ import { TabList, Tabs } from "@/components/application/tabs/tabs";
 import { Avatar } from "@/components/base/avatar/avatar";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 import { Input } from "@/components/base/input/input";
-import { useDashboardStats, useRecentRentals, useRevenueByDate } from "../hooks/use-analytics";
+import { useDashboardStats, useRecentRentals, useRevenueByDate, useMetricsComparison } from "../hooks/use-analytics";
 import { formatCurrency } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 // Helper function for formatting date timestamp
 const formatDate = (timestamp: string | number): string => {
@@ -50,12 +51,14 @@ interface DashboardMainProps {
 }
 
 export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardMainProps) => {
+    const t = useTranslations("dashboard");
     const [selectedTab, setSelectedTab] = useState<string>("30days");
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>();
     const [searchQuery, setSearchQuery] = useState("");
 
     // Fetch dashboard data
     const { data: stats, isLoading: statsLoading } = useDashboardStats();
+    const { data: metricsComparison } = useMetricsComparison(30);
     const dateRange = useMemo(() => generateDateRange(), []);
     const { data: revenueData } = useRevenueByDate(dateRange.start, dateRange.end);
     const { data: recentRentals } = useRecentRentals(10);
@@ -107,18 +110,6 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
         });
     }, [recentRentals, sortDescriptor]);
 
-    // Calculate metrics changes (mock percentages for now)
-    const totalRevenueChange = "12.5%";
-    const activeRentalsChange = "8.2%";
-    const availableItemsChange = "-3.1%";
-
-    // Generate simple chart data for metrics
-    const generateMetricChartData = (points: number) => {
-        return Array.from({ length: points }, (_, i) => ({
-            value: Math.floor(Math.random() * 5) + 3,
-        }));
-    };
-
     const today = new Date().toLocaleDateString("en-US", {
         day: "numeric",
         month: "long",
@@ -142,7 +133,7 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                     />
                                     <div>
                                         <h1 className="text-xl font-semibold text-primary">
-                                            Welcome back, {userName.split(" ")[0]}
+                                            {t("welcomeBack")}, {userName.split(" ")[0]}
                                         </h1>
                                         <p className="text-md text-tertiary">{today}</p>
                                     </div>
@@ -151,8 +142,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                     className="md:w-80"
                                     size="sm"
                                     shortcut
-                                    aria-label="Search"
-                                    placeholder="Search"
+                                    aria-label={t("search")}
+                                    placeholder={t("searchPlaceholder")}
                                     icon={SearchLg}
                                     value={searchQuery}
                                     onChange={(value) => setSearchQuery(value)}
@@ -173,8 +164,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                             id: "30days",
                                             label: (
                                                 <>
-                                                    <span className="max-md:hidden">30 days</span>
-                                                    <span className="md:hidden">30d</span>
+                                                    <span className="max-md:hidden">{t("30days")}</span>
+                                                    <span className="md:hidden">{t("30d")}</span>
                                                 </>
                                             ),
                                         },
@@ -182,8 +173,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                             id: "7days",
                                             label: (
                                                 <>
-                                                    <span className="max-md:hidden">7 days</span>
-                                                    <span className="md:hidden">7d</span>
+                                                    <span className="max-md:hidden">{t("7days")}</span>
+                                                    <span className="md:hidden">{t("7d")}</span>
                                                 </>
                                             ),
                                         },
@@ -191,8 +182,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                             id: "24hours",
                                             label: (
                                                 <>
-                                                    <span className="max-md:hidden">24 hours</span>
-                                                    <span className="md:hidden">24h</span>
+                                                    <span className="max-md:hidden">{t("24hours")}</span>
+                                                    <span className="md:hidden">{t("24h")}</span>
                                                 </>
                                             ),
                                         },
@@ -215,36 +206,36 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                     <div className="mx-auto flex w-full max-w-container flex-col gap-5 px-4 md:flex-row md:flex-wrap lg:gap-6 lg:px-8">
                         <MetricsChart04
                             title={formatCurrency(stats?.total_revenue || 0)}
-                            subtitle="Total Revenue"
+                            subtitle={t("totalRevenue")}
                             className="flex-1 md:min-w-[320px]"
                             type="simple"
-                            change={totalRevenueChange}
-                            changeTrend="positive"
+                            change={metricsComparison?.revenue.trend !== 'neutral' ? metricsComparison?.revenue.value || "0%" : "0%"}
+                            changeTrend={metricsComparison?.revenue.trend !== 'neutral' ? (metricsComparison?.revenue.trend as 'positive' | 'negative') : "positive"}
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
-                            chartData={generateMetricChartData(7)}
+                            chartData={[]}
                         />
                         <MetricsChart04
                             title={String(stats?.active_rentals || 0)}
-                            subtitle="Active Rentals"
+                            subtitle={t("activeRentals")}
                             className="flex-1 md:min-w-[320px]"
                             type="simple"
-                            change={activeRentalsChange}
-                            changeTrend="positive"
+                            change={metricsComparison?.activeRentals.trend !== 'neutral' ? metricsComparison?.activeRentals.value || "0%" : "0%"}
+                            changeTrend={metricsComparison?.activeRentals.trend !== 'neutral' ? (metricsComparison?.activeRentals.trend as 'positive' | 'negative') : "positive"}
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
-                            chartData={generateMetricChartData(9)}
+                            chartData={[]}
                         />
                         <MetricsChart04
                             title={String(stats?.available_items || 0)}
-                            subtitle="Available Items"
+                            subtitle={t("availableItems")}
                             className="flex-1 md:min-w-[320px]"
                             type="simple"
-                            change={availableItemsChange}
-                            changeTrend="negative"
+                            change="0%"
+                            changeTrend="positive"
                             chartColor="text-fg-brand-secondary"
                             chartAreaFill="none"
-                            chartData={generateMetricChartData(7)}
+                            chartData={[]}
                         />
                     </div>
 
@@ -252,7 +243,7 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                     <div className="mx-auto w-full max-w-container px-4 lg:px-8">
                         <div className="flex flex-col gap-0.5 rounded-xl bg-secondary_subtle shadow-xs ring-1 ring-secondary ring-inset">
                             <div className="flex gap-4 px-5 pt-3 pb-2">
-                                <p className="text-sm font-semibold text-primary">Revenue</p>
+                                <p className="text-sm font-semibold text-primary">{t("revenue")}</p>
                             </div>
                             <div className="flex flex-col gap-5 rounded-xl bg-primary p-5 ring-1 ring-secondary ring-inset">
                                 <div className="flex flex-col items-start gap-4 lg:flex-row">
@@ -261,8 +252,14 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                             {formatCurrency(totalRevenue)}
                                         </p>
                                         <div className="flex gap-2">
-                                            <MetricChangeIndicator value="3.2%" trend="positive" type="simple" />
-                                            <p className="text-sm font-medium text-tertiary">vs last 30 days</p>
+                                            {metricsComparison && metricsComparison.revenue.trend !== 'neutral' && (
+                                                <MetricChangeIndicator
+                                                    value={metricsComparison.revenue.value}
+                                                    trend={metricsComparison.revenue.trend}
+                                                    type="simple"
+                                                />
+                                            )}
+                                            <p className="text-sm font-medium text-tertiary">{t("last30Days")}</p>
                                         </div>
                                     </div>
 
@@ -274,8 +271,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                                     id: "30days",
                                                     label: (
                                                         <>
-                                                            <span className="max-md:hidden">30 days</span>
-                                                            <span className="md:hidden">30d</span>
+                                                            <span className="max-md:hidden">{t("30days")}</span>
+                                                            <span className="md:hidden">{t("30d")}</span>
                                                         </>
                                                     ),
                                                 },
@@ -283,8 +280,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                                     id: "7days",
                                                     label: (
                                                         <>
-                                                            <span className="max-md:hidden">7 days</span>
-                                                            <span className="md:hidden">7d</span>
+                                                            <span className="max-md:hidden">{t("7days")}</span>
+                                                            <span className="md:hidden">{t("7d")}</span>
                                                         </>
                                                     ),
                                                 },
@@ -292,8 +289,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                                     id: "24hours",
                                                     label: (
                                                         <>
-                                                            <span className="max-md:hidden">24 hours</span>
-                                                            <span className="md:hidden">24h</span>
+                                                            <span className="max-md:hidden">{t("24hours")}</span>
+                                                            <span className="md:hidden">{t("24h")}</span>
                                                         </>
                                                     ),
                                                 },
@@ -355,7 +352,7 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                     <div className="mx-auto flex w-full max-w-container flex-col gap-6 px-4 lg:px-8">
                         <TableCard.Root className="bg-secondary_subtle shadow-xs lg:rounded-xl">
                             <div className="flex gap-4 px-5 pt-3 pb-2.5">
-                                <p className="text-sm font-semibold text-primary">Recent Rentals</p>
+                                <p className="text-sm font-semibold text-primary">{t("recentRentals")}</p>
                             </div>
 
                             <div className="flex flex-col items-start gap-4 rounded-t-xl border-b border-secondary bg-primary p-5 ring-1 ring-secondary lg:flex-row">
@@ -364,8 +361,14 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                         {stats?.total_rentals || 0}
                                     </p>
                                     <div className="flex gap-2">
-                                        <MetricChangeIndicator value="8.6%" trend="positive" type="simple" />
-                                        <p className="text-sm font-medium text-tertiary">vs last 30 days</p>
+                                        {metricsComparison && metricsComparison.totalRentals.trend !== 'neutral' && (
+                                            <MetricChangeIndicator
+                                                value={metricsComparison.totalRentals.value}
+                                                trend={metricsComparison.totalRentals.trend}
+                                                type="simple"
+                                            />
+                                        )}
+                                        <p className="text-sm font-medium text-tertiary">{t("allTime")}</p>
                                     </div>
                                 </div>
 
@@ -373,8 +376,8 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                     <TabList
                                         type="button-minimal"
                                         items={[
-                                            { id: "all", label: "All rentals" },
-                                            { id: "active", label: "Active" },
+                                            { id: "all", label: t("rentals") },
+                                            { id: "active", label: t("activeRentals") },
                                             { id: "completed", label: "Completed" },
                                         ]}
                                     />
@@ -384,7 +387,7 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                             {sortedRentals && sortedRentals.length > 0 ? (
                                 <>
                                     <Table
-                                        aria-label="Recent rentals"
+                                        aria-label={t("recentRentals")}
                                         selectionMode="multiple"
                                         sortDescriptor={sortDescriptor}
                                         onSortChange={setSortDescriptor}
@@ -453,7 +456,7 @@ export const DashboardMain = ({ userName, userEmail, userAvatarUrl }: DashboardM
                                 </>
                             ) : (
                                 <div className="flex flex-col items-center justify-center bg-primary px-5 py-12">
-                                    <p className="text-sm text-tertiary">No rentals found</p>
+                                    <p className="text-sm text-tertiary">{t("noRentals")}</p>
                                 </div>
                             )}
                         </TableCard.Root>

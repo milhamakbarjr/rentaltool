@@ -20,6 +20,7 @@ import { Select } from '@/components/base/select/select'
 import { useCustomers, useCustomerTags } from '../hooks/use-customers'
 import { ROUTES } from '@/utils/constants'
 import type { CustomerFilterData } from '../schemas/customer-schema'
+import { useTranslations } from 'next-intl'
 
 // Helper to get initials from name
 const getInitials = (name: string) => {
@@ -31,6 +32,7 @@ const getInitials = (name: string) => {
 }
 
 export function CustomerList() {
+  const t = useTranslations('customers')
   const router = useRouter()
   const [filters, setFilters] = useState<CustomerFilterData>({
     sort_by: 'created_at',
@@ -96,7 +98,7 @@ export function CustomerList() {
   if (error) {
     return (
       <div className="rounded-lg bg-utility-error-50 p-4">
-        <p className="text-sm text-utility-error-700">Failed to load customers. Please try again.</p>
+        <p className="text-sm text-utility-error-700">{t('errorLoading')}</p>
       </div>
     )
   }
@@ -109,7 +111,7 @@ export function CustomerList() {
           className="flex-1"
           size="md"
           icon={SearchLg}
-          placeholder="Search customers by name, email, or phone..."
+          placeholder={t('searchPlaceholder')}
           value={filters.search || ''}
           onChange={(value) => setFilters({ ...filters, search: value })}
         />
@@ -118,12 +120,12 @@ export function CustomerList() {
         {tags && tags.length > 0 && (
           <Select
             className="sm:w-48"
-            placeholder="All tags"
+            placeholder={t('allTags')}
             selectedKey={filters.tag || ''}
             onSelectionChange={(key) => setFilters({ ...filters, tag: key as string })}
           >
-            <Select.Item id="" textValue="All tags">
-              All tags
+            <Select.Item id="" textValue={t('allTags')}>
+              {t('allTags')}
             </Select.Item>
             {tags.map((tag) => (
               <Select.Item id={tag} key={tag} textValue={tag}>
@@ -142,26 +144,26 @@ export function CustomerList() {
           </EmptyState.Header>
           <EmptyState.Content>
             <EmptyState.Title>
-              {filters.search || filters.tag ? 'No customers found' : 'No customers yet'}
+              {filters.search || filters.tag ? t('noCustomersFound') : t('noCustomers')}
             </EmptyState.Title>
             <EmptyState.Description>
               {filters.search || filters.tag
-                ? 'Try adjusting your filters to find what you are looking for.'
-                : 'Get started by adding your first customer to the system.'}
+                ? t('tryAdjustingFilters')
+                : t('noCustomersDescription')}
             </EmptyState.Description>
           </EmptyState.Content>
         </EmptyState>
       ) : (
         <TableCard.Root className="bg-secondary_subtle shadow-xs lg:rounded-xl">
           <div className="flex gap-4 px-5 pt-3 pb-2.5">
-            <p className="text-sm font-semibold text-primary">All Customers</p>
+            <p className="text-sm font-semibold text-primary">{t('allCustomers')}</p>
             <BadgeWithDot color="gray" type="modern" size="sm">
-              {sortedCustomers?.length || 0} total
+              {sortedCustomers?.length || 0} {t('total')}
             </BadgeWithDot>
           </div>
 
           <Table
-            aria-label="Customers"
+            aria-label={t('title')}
             selectionMode="multiple"
             sortDescriptor={sortDescriptor}
             onSortChange={handleSortChange}
@@ -169,11 +171,11 @@ export function CustomerList() {
             className="bg-primary"
           >
             <Table.Header className="bg-primary">
-              <Table.Head id="name" label="Customer" allowsSorting isRowHeader className="w-full" />
-              <Table.Head id="email" label="Contact" allowsSorting className="max-md:hidden" />
-              <Table.Head id="phone" label="Phone" className="max-lg:hidden" />
-              <Table.Head id="tags" label="Tags" className="max-lg:hidden" />
-              <Table.Head id="created_at" label="Added" allowsSorting className="max-md:hidden" />
+              <Table.Head id="name" label={t('customer')} allowsSorting isRowHeader className="w-full" />
+              <Table.Head id="email" label={t('contact')} allowsSorting className="max-md:hidden" />
+              <Table.Head id="phone" label={t('phone')} className="max-lg:hidden" />
+              <Table.Head id="tags" label={t('tags')} className="max-lg:hidden" />
+              <Table.Head id="created_at" label={t('added')} allowsSorting className="max-md:hidden" />
             </Table.Header>
 
             <Table.Body items={sortedCustomers || []}>
@@ -189,7 +191,7 @@ export function CustomerList() {
                       <div>
                         <p className="text-sm font-medium text-primary">{customer.name}</p>
                         <p className="text-sm text-tertiary md:hidden">
-                          {customer.email || customer.phone || 'No contact'}
+                          {customer.email || customer.phone || t('noContact')}
                         </p>
                       </div>
                     </div>
@@ -209,7 +211,7 @@ export function CustomerList() {
                         </div>
                       )}
                       {!customer.email && !customer.phone && (
-                        <span className="text-sm text-tertiary">No contact</span>
+                        <span className="text-sm text-tertiary">{t('noContact')}</span>
                       )}
                     </div>
                   </Table.Cell>

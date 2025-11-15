@@ -182,3 +182,94 @@ export async function getRecentRentals(limit: number = 10) {
     } : null
   }))
 }
+
+/**
+ * Calculate percentage change between two numbers
+ */
+function calculatePercentageChange(current: number, previous: number): { value: string; trend: 'positive' | 'negative' | 'neutral' } {
+  if (previous === 0) {
+    return { value: current > 0 ? '100%' : '0%', trend: current > 0 ? 'positive' : 'neutral' }
+  }
+
+  const change = ((current - previous) / previous) * 100
+  const absChange = Math.abs(change)
+
+  return {
+    value: `${absChange.toFixed(1)}%`,
+    trend: change > 0 ? 'positive' : change < 0 ? 'negative' : 'neutral'
+  }
+}
+
+/**
+ * Get metrics comparison with previous period
+ */
+export async function getMetricsComparison(days: number = 30) {
+  const supabase = createClient()
+
+  // Calculate date ranges
+  const now = new Date()
+  const currentPeriodStart = new Date(now)
+  currentPeriodStart.setDate(currentPeriodStart.getDate() - days)
+
+  const previousPeriodStart = new Date(currentPeriodStart)
+  previousPeriodStart.setDate(previousPeriodStart.getDate() - days)
+  const previousPeriodEnd = new Date(currentPeriodStart)
+
+  // Get current period stats
+  const currentStats = await getDashboardStats()
+
+  // Get previous period revenue
+  const { data: previousRevenue } = await supabase
+    .from('rentals')
+    .select('total_amount')
+    .gte('start_date', previousPeriodStart.toISOString())
+    .lt('start_date', previousPeriodEnd.toISOString())
+    .in('status', ['completed', 'active'])
+
+  const prevTotalRevenue = previousRevenue?.reduce((sum, r) => sum + (r.total_amount || 0), 0) || 0
+
+  // Get previous period rental count
+  const { count: prevTotalRentals } = await supabase
+    .from('rentals')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', previousPeriodStart.toISOString())
+    .lt('created_at', previousPeriodEnd.toISOString())
+
+  const { count: prevActiveRentals } = await supabase
+    .from('rentals')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', previousPeriodStart.toISOString())
+    .lt('created_at', previousPeriodEnd.toISOString())
+    .in('status', ['active', 'overdue'])
+
+  // Get previous period customer count
+  const { count: prevTotalCustomers } = await supabase
+    .from('customers')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', previousPeriodStart.toISOString())
+    .lt('created_at', previousPeriodEnd.toISOString())
+
+  // Calculate percentage changes
+  const revenueChange = calculatePercentageChange(currentStats.total_revenue, prevTotalRevenue)
+  const rentalsChange = calculatePercentageChange(currentStats.total_rentals, prevTotalRentals || 0)
+  const activeRentalsChange = calculatePercentageChange(currentStats.active_rentals, prevActiveRentals || 0)
+  const customersChange = calculatePercentageChange(currentStats.total_customers, prevTotalCustomers || 0)
+
+  // Calculate utilization rate change
+  const currentUtilization = currentStats.total_items > 0
+    ? ((currentStats.total_items - currentStats.available_items) / currentStats.total_items) * 100
+    : 0
+
+  // For simplicity, we'll estimate previous utilization
+  // In a real scenario, you'd want to track historical inventory status
+  const utilizationChange = { value: '0%', trend: 'neutral' as const }
+
+  return {
+    revenue: revenueChange,
+    totalRentals: rentalsChange,
+    activeRentals: activeRentalsChange,
+    customers: customersChange,
+    utilization: utilizationChange,
+    availableItems: { value: '0%', trend: 'neutral' as const }, // Would need historical tracking
+  }
+}
