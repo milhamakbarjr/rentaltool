@@ -256,9 +256,6 @@ export async function getMetricsComparison(days: number = 30) {
   const customersChange = calculatePercentageChange(currentStats.total_customers, prevTotalCustomers || 0)
 
   // Calculate utilization rate change
-  const currentUtilization = currentStats.total_items > 0
-    ? ((currentStats.total_items - currentStats.available_items) / currentStats.total_items) * 100
-    : 0
 
   // For simplicity, we'll estimate previous utilization
   // In a real scenario, you'd want to track historical inventory status
