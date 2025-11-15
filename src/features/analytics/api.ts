@@ -128,9 +128,9 @@ export async function getTopItems(limit: number = 5): Promise<TopItem[]> {
   // Group by item and calculate stats
   const itemStats: Record<string, { name: string; rental_count: number; total_revenue: number }> = {}
 
-  data?.forEach((item: any) => {
+  data?.forEach((item) => {
     const itemId = item.inventory_item_id
-    const itemName = item.inventory_item?.name || 'Unknown'
+    const itemName = (item.inventory_item as { name?: string } | null)?.name || 'Unknown'
 
     if (!itemStats[itemId]) {
       itemStats[itemId] = {
@@ -174,11 +174,99 @@ export async function getRecentRentals(limit: number = 10) {
   if (error) throw error
 
   // Map database column names to frontend field names
-  return data?.map((rental: any) => ({
+  return data?.map((rental) => ({
     ...rental,
     customer: rental.customer ? {
       ...rental.customer,
-      name: rental.customer.full_name,
+      name: (rental.customer as { full_name?: string }).full_name,
     } : null
   }))
+}
+
+/**
+ * Calculate percentage change between two numbers
+ */
+function calculatePercentageChange(current: number, previous: number): { value: string; trend: 'positive' | 'negative' | 'neutral' } {
+  if (previous === 0) {
+    return { value: current > 0 ? '100%' : '0%', trend: current > 0 ? 'positive' : 'neutral' }
+  }
+
+  const change = ((current - previous) / previous) * 100
+  const absChange = Math.abs(change)
+
+  return {
+    value: `${absChange.toFixed(1)}%`,
+    trend: change > 0 ? 'positive' : change < 0 ? 'negative' : 'neutral'
+  }
+}
+
+/**
+ * Get metrics comparison with previous period
+ */
+export async function getMetricsComparison(days: number = 30) {
+  const supabase = createClient()
+
+  // Calculate date ranges
+  const now = new Date()
+  const currentPeriodStart = new Date(now)
+  currentPeriodStart.setDate(currentPeriodStart.getDate() - days)
+
+  const previousPeriodStart = new Date(currentPeriodStart)
+  previousPeriodStart.setDate(previousPeriodStart.getDate() - days)
+  const previousPeriodEnd = new Date(currentPeriodStart)
+
+  // Get current period stats
+  const currentStats = await getDashboardStats()
+
+  // Get previous period revenue
+  const { data: previousRevenue } = await supabase
+    .from('rentals')
+    .select('total_amount')
+    .gte('start_date', previousPeriodStart.toISOString())
+    .lt('start_date', previousPeriodEnd.toISOString())
+    .in('status', ['completed', 'active'])
+
+  const prevTotalRevenue = previousRevenue?.reduce((sum, r) => sum + (r.total_amount || 0), 0) || 0
+
+  // Get previous period rental count
+  const { count: prevTotalRentals } = await supabase
+    .from('rentals')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', previousPeriodStart.toISOString())
+    .lt('created_at', previousPeriodEnd.toISOString())
+
+  const { count: prevActiveRentals } = await supabase
+    .from('rentals')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', previousPeriodStart.toISOString())
+    .lt('created_at', previousPeriodEnd.toISOString())
+    .in('status', ['active', 'overdue'])
+
+  // Get previous period customer count
+  const { count: prevTotalCustomers } = await supabase
+    .from('customers')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', previousPeriodStart.toISOString())
+    .lt('created_at', previousPeriodEnd.toISOString())
+
+  // Calculate percentage changes
+  const revenueChange = calculatePercentageChange(currentStats.total_revenue, prevTotalRevenue)
+  const rentalsChange = calculatePercentageChange(currentStats.total_rentals, prevTotalRentals || 0)
+  const activeRentalsChange = calculatePercentageChange(currentStats.active_rentals, prevActiveRentals || 0)
+  const customersChange = calculatePercentageChange(currentStats.total_customers, prevTotalCustomers || 0)
+
+  // Calculate utilization rate change
+
+  // For simplicity, we'll estimate previous utilization
+  // In a real scenario, you'd want to track historical inventory status
+  const utilizationChange = { value: '0%', trend: 'neutral' as const }
+
+  return {
+    revenue: revenueChange,
+    totalRentals: rentalsChange,
+    activeRentals: activeRentalsChange,
+    customers: customersChange,
+    utilization: utilizationChange,
+    availableItems: { value: '0%', trend: 'neutral' as const }, // Would need historical tracking
+  }
 }

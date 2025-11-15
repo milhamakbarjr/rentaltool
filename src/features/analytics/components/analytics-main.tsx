@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { parseDate } from "@internationalized/date";
 import type { SortDescriptor } from "react-aria-components";
+import { useTranslations } from "next-intl";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { DateRangePicker } from "@/components/application/date-picker/date-range-picker";
 import { MetricChangeIndicator, MetricsChart04 } from "@/components/application/metrics/metrics";
@@ -10,7 +11,7 @@ import { PaginationCardMinimal } from "@/components/application/pagination/pagin
 import { Table, TableCard } from "@/components/application/table/table";
 import { TabList, Tabs } from "@/components/application/tabs/tabs";
 import { BadgeWithDot } from "@/components/base/badges/badges";
-import { useDashboardStats, useRevenueByDate, useTopItems } from "../hooks/use-analytics";
+import { useDashboardStats, useRevenueByDate, useTopItems, useMetricsComparison } from "../hooks/use-analytics";
 import { formatCurrency } from "@/lib/utils";
 
 // Helper function for formatting date timestamp
@@ -69,6 +70,7 @@ interface AnalyticsMainProps {
 }
 
 export const AnalyticsMain = ({ userName, userEmail, userAvatarUrl }: AnalyticsMainProps) => {
+    const t = useTranslations("analytics");
     const [selectedPeriod, setSelectedPeriod] = useState<string>("30days");
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>();
 
@@ -77,6 +79,7 @@ export const AnalyticsMain = ({ userName, userEmail, userAvatarUrl }: AnalyticsM
     const dateRange = useMemo(() => generateDateRange(selectedPeriod), [selectedPeriod]);
     const { data: revenueData } = useRevenueByDate(dateRange.start, dateRange.end);
     const { data: topItems } = useTopItems(10);
+    const { data: metricsComparison } = useMetricsComparison(30);
 
     // Format revenue data for chart
     const chartData = useMemo(() => {
@@ -125,24 +128,11 @@ export const AnalyticsMain = ({ userName, userEmail, userAvatarUrl }: AnalyticsM
         });
     }, [topItems, sortDescriptor]);
 
-    // Calculate metrics changes (mock percentages for now)
-    const totalRevenueChange = "12.5%";
-    const activeRentalsChange = "8.2%";
-    const totalCustomersChange = "15.3%";
-    const utilizationRateChange = "5.7%";
-
     // Calculate inventory utilization rate
     const utilizationRate = useMemo(() => {
         if (!stats || stats.total_items === 0) return 0;
         return Math.round((stats.total_items - stats.available_items) / stats.total_items * 100);
     }, [stats]);
-
-    // Generate simple chart data for metrics
-    const generateMetricChartData = (points: number) => {
-        return Array.from({ length: points }, (_, i) => ({
-            value: Math.floor(Math.random() * 5) + 3,
-        }));
-    };
 
     return (
         <div className="flex flex-col gap-8">
@@ -219,54 +209,54 @@ export const AnalyticsMain = ({ userName, userEmail, userAvatarUrl }: AnalyticsM
             <div className="flex w-full flex-col gap-5 md:flex-row md:flex-wrap lg:gap-6">
                 <MetricsChart04
                     title={formatCurrency(totalRevenue)}
-                    subtitle="Total Revenue"
+                    subtitle={t("totalRevenue")}
                     className="flex-1 md:min-w-[320px]"
                     type="simple"
-                    change={totalRevenueChange}
-                    changeTrend="positive"
+                    change={metricsComparison?.revenue.trend !== 'neutral' ? metricsComparison?.revenue.value || "0%" : "0%"}
+                    changeTrend={metricsComparison?.revenue.trend !== 'neutral' ? (metricsComparison?.revenue.trend as 'positive' | 'negative') : "positive"}
                     chartColor="text-fg-brand-secondary"
                     chartAreaFill="none"
-                    chartData={generateMetricChartData(7)}
+                    chartData={[]}
                 />
                 <MetricsChart04
                     title={String(stats?.active_rentals || 0)}
-                    subtitle="Active Rentals"
+                    subtitle={t("activeRentals")}
                     className="flex-1 md:min-w-[320px]"
                     type="simple"
-                    change={activeRentalsChange}
-                    changeTrend="positive"
+                    change={metricsComparison?.activeRentals.trend !== 'neutral' ? metricsComparison?.activeRentals.value || "0%" : "0%"}
+                    changeTrend={metricsComparison?.activeRentals.trend !== 'neutral' ? (metricsComparison?.activeRentals.trend as 'positive' | 'negative') : "positive"}
                     chartColor="text-fg-brand-secondary"
                     chartAreaFill="none"
-                    chartData={generateMetricChartData(9)}
+                    chartData={[]}
                 />
                 <MetricsChart04
                     title={String(stats?.total_customers || 0)}
-                    subtitle="Total Customers"
+                    subtitle={t("totalCustomers")}
                     className="flex-1 md:min-w-[320px]"
                     type="simple"
-                    change={totalCustomersChange}
-                    changeTrend="positive"
+                    change={metricsComparison?.customers.trend !== 'neutral' ? metricsComparison?.customers.value || "0%" : "0%"}
+                    changeTrend={metricsComparison?.customers.trend !== 'neutral' ? (metricsComparison?.customers.trend as 'positive' | 'negative') : "positive"}
                     chartColor="text-fg-brand-secondary"
                     chartAreaFill="none"
-                    chartData={generateMetricChartData(7)}
+                    chartData={[]}
                 />
                 <MetricsChart04
                     title={`${utilizationRate}%`}
-                    subtitle="Inventory Utilization"
+                    subtitle={t("inventoryUtilization")}
                     className="flex-1 md:min-w-[320px]"
                     type="simple"
-                    change={utilizationRateChange}
+                    change="0%"
                     changeTrend="positive"
                     chartColor="text-fg-brand-secondary"
                     chartAreaFill="none"
-                    chartData={generateMetricChartData(8)}
+                    chartData={[]}
                 />
             </div>
 
             {/* Revenue Chart */}
             <div className="flex flex-col gap-0.5 rounded-xl bg-secondary_subtle shadow-xs ring-1 ring-secondary ring-inset">
                 <div className="flex gap-4 px-5 pt-3 pb-2">
-                    <p className="text-sm font-semibold text-primary">Revenue Trends</p>
+                    <p className="text-sm font-semibold text-primary">{t("revenueTrends")}</p>
                 </div>
                 <div className="flex flex-col gap-5 rounded-xl bg-primary p-5 ring-1 ring-secondary ring-inset">
                     <div className="flex flex-col items-start gap-4 lg:flex-row lg:items-center lg:justify-between">

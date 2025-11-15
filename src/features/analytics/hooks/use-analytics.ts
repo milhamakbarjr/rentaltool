@@ -11,6 +11,7 @@ import {
   getRevenueByDate,
   getTopItems,
   getRecentRentals,
+  getMetricsComparison,
 } from '../api'
 
 /**
@@ -54,6 +55,17 @@ export function useRecentRentals(limit: number = 10) {
   return useQuery({
     queryKey: [QUERY_KEYS.ANALYTICS, 'recent-rentals', limit],
     queryFn: () => getRecentRentals(limit),
+    staleTime: 60000,
+  })
+}
+
+/**
+ * Query: Get metrics comparison with previous period
+ */
+export function useMetricsComparison(days: number = 30) {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ANALYTICS, 'metrics-comparison', days],
+    queryFn: () => getMetricsComparison(days),
     staleTime: 60000,
   })
 }

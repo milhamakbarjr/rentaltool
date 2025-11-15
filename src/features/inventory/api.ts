@@ -5,7 +5,7 @@
  */
 
 import { createClient } from '@/lib/supabase/client'
-import type { Database } from '@/types/supabase'
+import type { Database, Json } from '@/types/supabase'
 import type { InventoryItemFormData, InventoryFilterData } from './schemas/inventory-schema'
 
 type InventoryItem = Database['public']['Tables']['inventory_items']['Row']
@@ -94,11 +94,11 @@ export async function createInventoryItem(data: InventoryItemFormData, userId: s
     condition: data.condition,
     purchase_cost: data.purchase_cost || null,
     purchase_date: data.purchase_date || null,
-    pricing: data.pricing as any,
+    pricing: data.pricing as Json,
     deposit_required: data.deposit_required,
     minimum_rental_period: data.minimum_rental_period,
     photos: data.photos,
-    specifications: data.specifications as any,
+    specifications: data.specifications as Json,
     status: data.status,
   }
 
@@ -129,11 +129,11 @@ export async function updateInventoryItem(id: string, data: Partial<InventoryIte
     condition: data.condition,
     purchase_cost: data.purchase_cost,
     purchase_date: data.purchase_date,
-    pricing: data.pricing as any,
+    pricing: data.pricing as Json,
     deposit_required: data.deposit_required,
     minimum_rental_period: data.minimum_rental_period,
     photos: data.photos,
-    specifications: data.specifications as any,
+    specifications: data.specifications as Json,
     status: data.status,
   }
 
