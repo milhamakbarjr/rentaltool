@@ -16,8 +16,9 @@ import { Dialog, Modal, ModalOverlay } from '@/components/application/modals/mod
 import { Carousel, CarouselContext } from '@/components/application/carousel/carousel-base'
 import { Button } from '@/components/base/buttons/button'
 import { CloseButton } from '@/components/base/buttons/close-button'
-import { Input } from '@/components/base/input/input'
+import { Input, TextField, InputBase } from '@/components/base/input/input'
 import { Label } from '@/components/base/input/label'
+import { HintText } from '@/components/base/input/hint-text'
 import { CurrencyInput } from '@/components/base/input/currency-input'
 import { Select } from '@/components/base/select/select'
 import { TextAreaBase } from '@/components/base/textarea/textarea'
@@ -225,19 +226,28 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="quantity_total"
                         control={control}
                         render={({ field }) => (
-                          <Input
-                            size="md"
-                            type="number"
-                            label="Quantity *"
-                            placeholder="1"
-                            hint={errors.quantity_total?.message}
-                            isInvalid={!!errors.quantity_total}
+                          <TextField
+                            inputMode="numeric"
                             value={String(field.value ?? '')}
                             onChange={(value) => {
-                              const numValue = value === '' ? 1 : parseInt(value)
+                              const numValue = value === '' ? 1 : parseInt(value, 10)
                               field.onChange(isNaN(numValue) ? 1 : numValue)
                             }}
-                          />
+                          >
+                            {({ isInvalid }) => (
+                              <>
+                                <Label isRequired>Quantity</Label>
+                                <InputBase
+                                  size="md"
+                                  type="text"
+                                  placeholder="1"
+                                />
+                                {errors.quantity_total && (
+                                  <HintText isInvalid>{errors.quantity_total.message}</HintText>
+                                )}
+                              </>
+                            )}
+                          </TextField>
                         )}
                       />
                     </div>
@@ -389,19 +399,28 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="minimum_rental_period"
                         control={control}
                         render={({ field }) => (
-                          <Input
-                            size="md"
-                            type="number"
-                            label="Minimum Rental Period (hours)"
-                            placeholder="24"
-                            hint={errors.minimum_rental_period?.message}
-                            isInvalid={!!errors.minimum_rental_period}
+                          <TextField
+                            inputMode="numeric"
                             value={String(field.value ?? '')}
                             onChange={(value) => {
-                              const numValue = value === '' ? 24 : parseInt(value)
+                              const numValue = value === '' ? 24 : parseInt(value, 10)
                               field.onChange(isNaN(numValue) ? 24 : numValue)
                             }}
-                          />
+                          >
+                            {({ isInvalid }) => (
+                              <>
+                                <Label>Minimum Rental Period (hours)</Label>
+                                <InputBase
+                                  size="md"
+                                  type="text"
+                                  placeholder="24"
+                                />
+                                {errors.minimum_rental_period && (
+                                  <HintText isInvalid>{errors.minimum_rental_period.message}</HintText>
+                                )}
+                              </>
+                            )}
+                          </TextField>
                         )}
                       />
                     </div>
@@ -429,13 +448,24 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="purchase_date"
                         control={control}
                         render={({ field }) => (
-                          <Input
-                            size="md"
-                            type="date"
-                            label="Purchase Date"
+                          <TextField
                             value={field.value || ''}
                             onChange={field.onChange}
-                          />
+                          >
+                            {({ isInvalid }) => (
+                              <>
+                                <Label>Purchase Date</Label>
+                                <InputBase
+                                  size="md"
+                                  type="date"
+                                  placeholder="YYYY-MM-DD"
+                                />
+                                {errors.purchase_date && (
+                                  <HintText isInvalid>{errors.purchase_date.message}</HintText>
+                                )}
+                              </>
+                            )}
+                          </TextField>
                         )}
                       />
                     </div>
