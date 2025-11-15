@@ -1,72 +1,64 @@
 /**
  * Inventory Add Modal Component
  *
- * Modal for creating new inventory items using Untitled UI patterns
+ * Modal for creating new inventory items using Untitled UI patterns with mobile-first approach
  */
 
 'use client'
 
-import { useState, type Key } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Package, X } from '@untitledui/icons'
+import { Package, ArrowLeft } from '@untitledui/icons'
 import { DialogTrigger as AriaDialogTrigger, Heading as AriaHeading } from 'react-aria-components'
 import { Dialog, Modal, ModalOverlay } from '@/components/application/modals/modal'
+import { Carousel, CarouselContext } from '@/components/application/carousel/carousel-base'
 import { Button } from '@/components/base/buttons/button'
 import { CloseButton } from '@/components/base/buttons/close-button'
 import { Input, InputBase } from '@/components/base/input/input'
 import { InputGroup } from '@/components/base/input/input-group'
 import { Label } from '@/components/base/input/label'
 import { Select } from '@/components/base/select/select'
-import { NativeSelect } from '@/components/base/select/select-native'
 import { TextAreaBase } from '@/components/base/textarea/textarea'
 import { FeaturedIcon } from '@/components/foundations/featured-icon/featured-icon'
 import { BackgroundPattern } from '@/components/shared-assets/background-patterns'
-import { Tabs } from '@/components/application/tabs/tabs'
 import { useCreateInventoryItem, useCategories } from '../hooks/use-inventory'
 import { inventoryItemSchema, type InventoryItemFormData } from '../schemas/inventory-schema'
-import { ROUTES, ITEM_CONDITION_LABELS } from '@/utils/constants'
+import { ITEM_CONDITION_LABELS } from '@/utils/constants'
 
 interface InventoryAddModalProps {
   isOpen: boolean
   onOpenChange: (isOpen: boolean) => void
 }
 
-const tabs = [
-  { id: 'basic', label: 'Basic Info' },
-  { id: 'pricing', label: 'Pricing' },
-  { id: 'details', label: 'Additional' },
-]
-
 const conditionOptions = [
-  { label: ITEM_CONDITION_LABELS.new, value: 'new' },
-  { label: ITEM_CONDITION_LABELS.good, value: 'good' },
-  { label: ITEM_CONDITION_LABELS.fair, value: 'fair' },
-  { label: ITEM_CONDITION_LABELS.needs_repair, value: 'needs_repair' },
+  { id: 'new', label: ITEM_CONDITION_LABELS.new },
+  { id: 'good', label: ITEM_CONDITION_LABELS.good },
+  { id: 'fair', label: ITEM_CONDITION_LABELS.fair },
+  { id: 'needs_repair', label: ITEM_CONDITION_LABELS.needs_repair },
 ]
 
 const statusOptions = [
-  { label: 'Available', value: 'available' },
-  { label: 'Rented', value: 'rented' },
-  { label: 'Maintenance', value: 'maintenance' },
-  { label: 'Retired', value: 'retired' },
+  { id: 'available', label: 'Available' },
+  { id: 'rented', label: 'Rented' },
+  { id: 'maintenance', label: 'Maintenance' },
+  { id: 'retired', label: 'Retired' },
 ]
 
 export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalProps) {
   const router = useRouter()
-  const [selectedTab, setSelectedTab] = useState<Key>('basic')
   const [error, setError] = useState<string | null>(null)
 
   const { data: categories } = useCategories()
   const createMutation = useCreateInventoryItem()
 
   const {
-    register,
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm({
     resolver: zodResolver(inventoryItemSchema),
     defaultValues: {
@@ -88,6 +80,15 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
       purchase_date: '',
     },
   })
+
+  const categoryOptions = [
+    { id: '', label: 'No category' },
+    ...(categories?.map((cat) => ({
+      id: cat.id,
+      label: cat.name,
+      icon: cat.icon,
+    })) || []),
+  ]
 
   const onSubmit = async (data: InventoryItemFormData) => {
     try {
@@ -116,9 +117,12 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
   const handleClose = () => {
     reset()
     setError(null)
-    setSelectedTab('basic')
     onOpenChange(false)
   }
+
+  // Check if basic info is filled for validation
+  const name = watch('name')
+  const isBasicInfoValid = name && name.length >= 2
 
   return (
     <AriaDialogTrigger isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -126,7 +130,7 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
         <Modal>
           <Dialog className="overflow-hidden">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="relative w-full overflow-hidden rounded-xl bg-primary shadow-xl sm:max-w-160">
+              <Carousel.Root className="relative w-full overflow-hidden rounded-xl bg-primary shadow-xl sm:max-w-160">
                 <CloseButton onClick={handleClose} theme="light" size="lg" className="absolute top-3 right-3 z-20" />
 
                 {/* Header */}
@@ -152,337 +156,352 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                   </div>
                 )}
 
-                {/* Tab Navigation */}
-                <div className="px-4 sm:px-6">
-                  <NativeSelect
-                    aria-label="Form sections"
-                    value={selectedTab as string}
-                    onChange={(event) => setSelectedTab(event.target.value)}
-                    options={tabs.map((tab) => ({ label: tab.label, value: tab.id }))}
-                    className="w-full md:hidden"
-                  />
-                  <Tabs selectedKey={selectedTab as string} onSelectionChange={setSelectedTab} className="w-full max-md:hidden">
-                    <Tabs.List type="button-minimal" items={tabs}>
-                      {(tab) => <Tabs.Item {...tab} />}
-                    </Tabs.List>
-                  </Tabs>
-                </div>
-
-                <div className="h-5 w-full" />
-
-                {/* Tab Content */}
-                <div className="min-h-[400px] px-4 sm:px-6">
-                  {selectedTab === 'basic' && (
-                    <div className="grid w-full grid-cols-1 items-start justify-start gap-4 sm:grid-cols-2">
-                      {/* Name */}
-                      <div className="sm:col-span-2">
-                        <Controller
-                          name="name"
-                          control={control}
-                          render={({ field }) => (
-                            <Input
-                              size="md"
-                              label="Item Name *"
-                              placeholder="e.g., Power Drill"
-                              hint={errors.name?.message}
-                              isInvalid={!!errors.name}
-                              value={field.value}
-                              onChange={field.onChange}
-                            />
-                          )}
-                        />
-                      </div>
-
-                      {/* Description */}
-                      <div className="flex flex-col gap-1.5 self-stretch sm:col-span-2">
-                        <Label>Description</Label>
-                        <TextAreaBase
-                          className="h-24 flex-1 rounded-lg px-3.5 py-3"
-                          placeholder="Brief description of the item..."
-                          {...register('description')}
-                        />
-                        {errors.description && (
-                          <p className="text-sm text-utility-error-700">{errors.description.message}</p>
+                {/* Carousel Content */}
+                <Carousel.Content className="gap-5">
+                  {/* Step 1: Basic Info */}
+                  <Carousel.Item className="grid w-full grid-cols-1 items-start justify-start gap-4 px-4 sm:grid-cols-2 sm:px-6">
+                    {/* Name */}
+                    <div className="sm:col-span-2">
+                      <Controller
+                        name="name"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            size="md"
+                            label="Item Name *"
+                            placeholder="e.g., Power Drill"
+                            hint={errors.name?.message}
+                            isInvalid={!!errors.name}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         )}
-                      </div>
-
-                      {/* Category */}
-                      <div className="sm:col-span-1">
-                        <Label>Category</Label>
-                        <Controller
-                          name="category_id"
-                          control={control}
-                          render={({ field }) => (
-                            <NativeSelect
-                              value={field.value || ''}
-                              onChange={field.onChange}
-                              options={[
-                                { label: 'No category', value: '' },
-                                ...(categories?.map((cat) => ({
-                                  label: `${cat.icon || ''} ${cat.name}`,
-                                  value: cat.id,
-                                })) || []),
-                              ]}
-                              className="mt-1.5"
-                            />
-                          )}
-                        />
-                      </div>
-
-                      {/* Quantity */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="quantity_total"
-                          control={control}
-                          render={({ field }) => (
-                            <Input
-                              size="md"
-                              type="number"
-                              label="Quantity *"
-                              placeholder="1"
-                              hint={errors.quantity_total?.message}
-                              isInvalid={!!errors.quantity_total}
-                              value={field.value?.toString() || ''}
-                              onChange={(value) => field.onChange(parseInt(value) || 0)}
-                            />
-                          )}
-                        />
-                      </div>
-
-                      {/* Condition */}
-                      <div className="sm:col-span-1">
-                        <Label>Condition *</Label>
-                        <Controller
-                          name="condition"
-                          control={control}
-                          render={({ field }) => (
-                            <NativeSelect {...field} options={conditionOptions} className="mt-1.5" />
-                          )}
-                        />
-                      </div>
-
-                      {/* Status */}
-                      <div className="sm:col-span-1">
-                        <Label>Status *</Label>
-                        <Controller
-                          name="status"
-                          control={control}
-                          render={({ field }) => (
-                            <NativeSelect {...field} options={statusOptions} className="mt-1.5" />
-                          )}
-                        />
-                      </div>
+                      />
                     </div>
-                  )}
 
-                  {selectedTab === 'pricing' && (
-                    <div className="grid w-full grid-cols-1 items-start justify-start gap-4 sm:grid-cols-2">
-                      <div className="sm:col-span-2">
-                        <p className="text-sm text-tertiary">At least one pricing rate is required</p>
-                      </div>
-
-                      {/* Hourly Rate */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="pricing.hourly"
-                          control={control}
-                          render={({ field }) => (
-                            <InputGroup
-                              size="md"
-                              label="Hourly Rate"
-                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                            >
-                              <InputBase
-                                type="number"
-                                placeholder="0.00"
-                                value={field.value?.toString() || ''}
-                                onChange={(value) => field.onChange(parseFloat(value) || null)}
-                              />
-                            </InputGroup>
-                          )}
-                        />
-                      </div>
-
-                      {/* Daily Rate */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="pricing.daily"
-                          control={control}
-                          render={({ field }) => (
-                            <InputGroup
-                              size="md"
-                              label="Daily Rate"
-                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                            >
-                              <InputBase
-                                type="number"
-                                placeholder="0.00"
-                                value={field.value?.toString() || ''}
-                                onChange={(value) => field.onChange(parseFloat(value) || null)}
-                              />
-                            </InputGroup>
-                          )}
-                        />
-                      </div>
-
-                      {/* Weekly Rate */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="pricing.weekly"
-                          control={control}
-                          render={({ field }) => (
-                            <InputGroup
-                              size="md"
-                              label="Weekly Rate"
-                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                            >
-                              <InputBase
-                                type="number"
-                                placeholder="0.00"
-                                value={field.value?.toString() || ''}
-                                onChange={(value) => field.onChange(parseFloat(value) || null)}
-                              />
-                            </InputGroup>
-                          )}
-                        />
-                      </div>
-
-                      {/* Monthly Rate */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="pricing.monthly"
-                          control={control}
-                          render={({ field }) => (
-                            <InputGroup
-                              size="md"
-                              label="Monthly Rate"
-                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                            >
-                              <InputBase
-                                type="number"
-                                placeholder="0.00"
-                                value={field.value?.toString() || ''}
-                                onChange={(value) => field.onChange(parseFloat(value) || null)}
-                              />
-                            </InputGroup>
-                          )}
-                        />
-                      </div>
-
-                      {errors.pricing && (
-                        <div className="sm:col-span-2">
-                          <p className="text-sm text-utility-error-700">{errors.pricing.message}</p>
-                        </div>
+                    {/* Description */}
+                    <div className="flex flex-col gap-1.5 self-stretch sm:col-span-2">
+                      <Label>Description</Label>
+                      <Controller
+                        name="description"
+                        control={control}
+                        render={({ field }) => (
+                          <TextAreaBase
+                            className="h-24 flex-1 rounded-lg px-3.5 py-3"
+                            placeholder="Brief description of the item..."
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                          />
+                        )}
+                      />
+                      {errors.description && (
+                        <p className="text-sm text-utility-error-700">{errors.description.message}</p>
                       )}
                     </div>
-                  )}
 
-                  {selectedTab === 'details' && (
-                    <div className="grid w-full grid-cols-1 items-start justify-start gap-4 sm:grid-cols-2">
-                      {/* Deposit Required */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="deposit_required"
-                          control={control}
-                          render={({ field }) => (
-                            <InputGroup
-                              size="md"
-                              label="Deposit Required"
-                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                            >
-                              <InputBase
-                                type="number"
-                                placeholder="0.00"
-                                value={field.value?.toString() || ''}
-                                onChange={(value) => field.onChange(parseFloat(value) || 0)}
-                              />
-                            </InputGroup>
-                          )}
-                        />
-                      </div>
+                    {/* Category */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="category_id"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            size="md"
+                            label="Category"
+                            placeholder="Select category"
+                            items={categoryOptions}
+                            selectedKey={field.value || ''}
+                            onSelectionChange={(value) => field.onChange(value as string)}
+                          >
+                            {(item) => <Select.Item id={item.id}>{item.label}</Select.Item>}
+                          </Select>
+                        )}
+                      />
+                    </div>
 
-                      {/* Minimum Rental Period */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="minimum_rental_period"
-                          control={control}
-                          render={({ field }) => (
-                            <Input
-                              size="md"
+                    {/* Quantity */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="quantity_total"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            size="md"
+                            type="number"
+                            label="Quantity *"
+                            placeholder="1"
+                            hint={errors.quantity_total?.message}
+                            isInvalid={!!errors.quantity_total}
+                            value={field.value?.toString() || ''}
+                            onChange={(value) => field.onChange(parseInt(value) || 1)}
+                          />
+                        )}
+                      />
+                    </div>
+
+                    {/* Condition */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="condition"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            size="md"
+                            label="Condition *"
+                            placeholder="Select condition"
+                            items={conditionOptions}
+                            selectedKey={field.value}
+                            onSelectionChange={(value) => field.onChange(value as string)}
+                          >
+                            {(item) => <Select.Item id={item.id}>{item.label}</Select.Item>}
+                          </Select>
+                        )}
+                      />
+                    </div>
+
+                    {/* Status */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="status"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            size="md"
+                            label="Status *"
+                            placeholder="Select status"
+                            items={statusOptions}
+                            selectedKey={field.value}
+                            onSelectionChange={(value) => field.onChange(value as string)}
+                          >
+                            {(item) => <Select.Item id={item.id}>{item.label}</Select.Item>}
+                          </Select>
+                        )}
+                      />
+                    </div>
+                  </Carousel.Item>
+
+                  {/* Step 2: Pricing */}
+                  <Carousel.Item className="grid w-full grid-cols-1 items-start justify-start gap-4 px-4 sm:grid-cols-2 sm:px-6">
+                    <div className="sm:col-span-2">
+                      <p className="text-sm text-tertiary">At least one pricing rate is required</p>
+                    </div>
+
+                    {/* Hourly Rate */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="pricing.hourly"
+                        control={control}
+                        render={({ field }) => (
+                          <InputGroup
+                            size="md"
+                            label="Hourly Rate"
+                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
+                          >
+                            <InputBase
                               type="number"
-                              label="Minimum Rental Period (hours)"
-                              placeholder="24"
-                              hint={errors.minimum_rental_period?.message}
-                              isInvalid={!!errors.minimum_rental_period}
+                              placeholder="0"
                               value={field.value?.toString() || ''}
-                              onChange={(value) => field.onChange(parseInt(value) || 0)}
+                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
                             />
-                          )}
-                        />
-                      </div>
+                          </InputGroup>
+                        )}
+                      />
+                    </div>
 
-                      {/* Purchase Cost */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="purchase_cost"
-                          control={control}
-                          render={({ field }) => (
-                            <InputGroup
-                              size="md"
-                              label="Purchase Cost"
-                              leadingAddon={<InputGroup.Prefix>$</InputGroup.Prefix>}
-                            >
-                              <InputBase
-                                type="number"
-                                placeholder="0.00"
-                                value={field.value?.toString() || ''}
-                                onChange={(value) => field.onChange(parseFloat(value) || null)}
-                              />
-                            </InputGroup>
-                          )}
-                        />
-                      </div>
-
-                      {/* Purchase Date */}
-                      <div className="sm:col-span-1">
-                        <Controller
-                          name="purchase_date"
-                          control={control}
-                          render={({ field }) => (
-                            <Input
-                              size="md"
-                              type="date"
-                              label="Purchase Date"
-                              value={field.value || ''}
-                              onChange={field.onChange}
+                    {/* Daily Rate */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="pricing.daily"
+                        control={control}
+                        render={({ field }) => (
+                          <InputGroup
+                            size="md"
+                            label="Daily Rate"
+                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
+                          >
+                            <InputBase
+                              type="number"
+                              placeholder="0"
+                              value={field.value?.toString() || ''}
+                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
                             />
-                          )}
-                        />
+                          </InputGroup>
+                        )}
+                      />
+                    </div>
+
+                    {/* Weekly Rate */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="pricing.weekly"
+                        control={control}
+                        render={({ field }) => (
+                          <InputGroup
+                            size="md"
+                            label="Weekly Rate"
+                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
+                          >
+                            <InputBase
+                              type="number"
+                              placeholder="0"
+                              value={field.value?.toString() || ''}
+                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
+                            />
+                          </InputGroup>
+                        )}
+                      />
+                    </div>
+
+                    {/* Monthly Rate */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="pricing.monthly"
+                        control={control}
+                        render={({ field }) => (
+                          <InputGroup
+                            size="md"
+                            label="Monthly Rate"
+                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
+                          >
+                            <InputBase
+                              type="number"
+                              placeholder="0"
+                              value={field.value?.toString() || ''}
+                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
+                            />
+                          </InputGroup>
+                        )}
+                      />
+                    </div>
+
+                    {errors.pricing && (
+                      <div className="sm:col-span-2">
+                        <p className="text-sm text-utility-error-700">{errors.pricing.message}</p>
                       </div>
+                    )}
+                  </Carousel.Item>
+
+                  {/* Step 3: Additional Details */}
+                  <Carousel.Item className="grid w-full grid-cols-1 items-start justify-start gap-4 px-4 sm:grid-cols-2 sm:px-6">
+                    {/* Deposit Required */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="deposit_required"
+                        control={control}
+                        render={({ field }) => (
+                          <InputGroup
+                            size="md"
+                            label="Deposit Required"
+                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
+                          >
+                            <InputBase
+                              type="number"
+                              placeholder="0"
+                              value={field.value?.toString() || ''}
+                              onChange={(value) => field.onChange(value ? parseFloat(value) : 0)}
+                            />
+                          </InputGroup>
+                        )}
+                      />
+                    </div>
+
+                    {/* Minimum Rental Period */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="minimum_rental_period"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            size="md"
+                            type="number"
+                            label="Minimum Rental Period (hours)"
+                            placeholder="24"
+                            hint={errors.minimum_rental_period?.message}
+                            isInvalid={!!errors.minimum_rental_period}
+                            value={field.value?.toString() || ''}
+                            onChange={(value) => field.onChange(value ? parseInt(value) : 24)}
+                          />
+                        )}
+                      />
+                    </div>
+
+                    {/* Purchase Cost */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="purchase_cost"
+                        control={control}
+                        render={({ field }) => (
+                          <InputGroup
+                            size="md"
+                            label="Purchase Cost"
+                            leadingAddon={<InputGroup.Prefix>Rp</InputGroup.Prefix>}
+                          >
+                            <InputBase
+                              type="number"
+                              placeholder="0"
+                              value={field.value?.toString() || ''}
+                              onChange={(value) => field.onChange(value ? parseFloat(value) : null)}
+                            />
+                          </InputGroup>
+                        )}
+                      />
+                    </div>
+
+                    {/* Purchase Date */}
+                    <div className="sm:col-span-1">
+                      <Controller
+                        name="purchase_date"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            size="md"
+                            type="date"
+                            label="Purchase Date"
+                            value={field.value || ''}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </div>
+                  </Carousel.Item>
+                </Carousel.Content>
+
+                {/* Footer with Back/Next/Submit buttons */}
+                <CarouselContext.Consumer>
+                  {(context) => (
+                    <div className="z-10 mt-6 flex flex-1 flex-col-reverse gap-3 p-4 pt-6 sm:grid sm:grid-cols-2 sm:px-6 sm:pt-8 sm:pb-6">
+                      <Button
+                        type="button"
+                        size="lg"
+                        color="secondary"
+                        iconLeading={context?.canScrollPrev ? ArrowLeft : undefined}
+                        onClick={() => {
+                          if (context?.canScrollPrev) {
+                            context.scrollPrev()
+                          } else {
+                            handleClose()
+                          }
+                        }}
+                      >
+                        {context?.canScrollPrev ? 'Back' : 'Cancel'}
+                      </Button>
+                      <Button
+                        type={context?.canScrollNext ? 'button' : 'submit'}
+                        size="lg"
+                        color="primary"
+                        disabled={isSubmitting || (!isBasicInfoValid && context?.selectedIndex === 0)}
+                        onClick={() => {
+                          if (context?.canScrollNext) {
+                            context.scrollNext()
+                          }
+                        }}
+                      >
+                        {isSubmitting ? 'Creating...' : context?.canScrollNext ? 'Next' : 'Add Item'}
+                      </Button>
                     </div>
                   )}
-                </div>
-
-                {/* Footer */}
-                <div className="z-10 mt-6 flex flex-1 flex-col-reverse gap-3 p-4 pt-6 sm:grid sm:grid-cols-2 sm:px-6 sm:pt-8 sm:pb-6">
-                  <Button
-                    type="button"
-                    size="lg"
-                    color="secondary"
-                    onClick={handleClose}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="lg"
-                    color="primary"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Creating...' : 'Add Item'}
-                  </Button>
-                </div>
-              </div>
+                </CarouselContext.Consumer>
+              </Carousel.Root>
             </form>
           </Dialog>
         </Modal>
