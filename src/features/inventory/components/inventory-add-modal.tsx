@@ -228,10 +228,21 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         render={({ field }) => (
                           <TextField
                             inputMode="numeric"
-                            value={String(field.value ?? '')}
+                            value={field.value === undefined || field.value === null ? '' : String(field.value)}
                             onChange={(value) => {
-                              const numValue = value === '' ? 1 : parseInt(value, 10)
-                              field.onChange(isNaN(numValue) ? 1 : numValue)
+                              // Allow empty string while editing
+                              if (value === '') {
+                                field.onChange(undefined)
+                              } else {
+                                const numValue = parseInt(value, 10)
+                                field.onChange(isNaN(numValue) ? undefined : numValue)
+                              }
+                            }}
+                            onBlur={() => {
+                              // If still empty on blur, set to 1
+                              if (!field.value) {
+                                field.onChange(1)
+                              }
                             }}
                           >
                             {({ isInvalid }) => (
@@ -401,10 +412,21 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         render={({ field }) => (
                           <TextField
                             inputMode="numeric"
-                            value={String(field.value ?? '')}
+                            value={field.value === undefined || field.value === null ? '' : String(field.value)}
                             onChange={(value) => {
-                              const numValue = value === '' ? 24 : parseInt(value, 10)
-                              field.onChange(isNaN(numValue) ? 24 : numValue)
+                              // Allow empty string while editing
+                              if (value === '') {
+                                field.onChange(undefined)
+                              } else {
+                                const numValue = parseInt(value, 10)
+                                field.onChange(isNaN(numValue) ? undefined : numValue)
+                              }
+                            }}
+                            onBlur={() => {
+                              // If still empty on blur, set to 24
+                              if (!field.value) {
+                                field.onChange(24)
+                              }
                             }}
                           >
                             {({ isInvalid }) => (

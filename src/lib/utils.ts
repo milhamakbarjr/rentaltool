@@ -272,7 +272,7 @@ export function parseIndonesianNumber(value: string | number | null | undefined)
   if (strValue === '') return null
 
   // Remove dots (thousand separators) and replace comma (decimal separator) with dot
-  const cleaned = strValue.replace(/\./g, '').replace(',', '.')
+  const cleaned = strValue.replace(/\./g, '').replace(/,/g, '.')
   const parsed = Number(cleaned)
 
   return isNaN(parsed) ? null : parsed
@@ -283,6 +283,12 @@ export function parseIndonesianNumber(value: string | number | null | undefined)
  */
 export function formatDate(date: Date | string, locale: string = 'id-ID'): string {
   const d = typeof date === 'string' ? new Date(date) : date
+  
+  // Check if the date is valid
+  if (isNaN(d.getTime())) {
+    throw new Error('Invalid date provided to formatDate')
+  }
+  
   return new Intl.DateTimeFormat(locale, {
     day: '2-digit',
     month: 'long',
