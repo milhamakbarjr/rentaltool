@@ -70,23 +70,15 @@ export const HeaderNavigationBase = ({
 
                     <div className="mt-auto flex flex-col gap-4 px-2 py-4 lg:px-4 lg:py-6">
                         <div className="flex flex-col gap-1">
-                            <NavItemBase type="link" href="#" icon={LifeBuoy01}>
+                            {/* <NavItemBase type="link" href="#" icon={LifeBuoy01}>
                                 Support
-                            </NavItemBase>
+                            </NavItemBase> */}
                             <NavItemBase
                                 type="link"
                                 href="#"
                                 icon={Settings01}
-                                badge={
-                                    <BadgeWithDot color="success" type="modern" size="sm">
-                                        Online
-                                    </BadgeWithDot>
-                                }
                             >
                                 Settings
-                            </NavItemBase>
-                            <NavItemBase type="link" href="https://www.untitledui.com/" icon={Settings01}>
-                                Open in browser
                             </NavItemBase>
                         </div>
 
