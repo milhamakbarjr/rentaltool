@@ -16,8 +16,9 @@ import { Dialog, Modal, ModalOverlay } from '@/components/application/modals/mod
 import { Carousel, CarouselContext } from '@/components/application/carousel/carousel-base'
 import { Button } from '@/components/base/buttons/button'
 import { CloseButton } from '@/components/base/buttons/close-button'
-import { TextField, InputBase } from '@/components/base/input/input'
+import { Input, TextField, InputBase } from '@/components/base/input/input'
 import { Label } from '@/components/base/input/label'
+import { HintText } from '@/components/base/input/hint-text'
 import { CurrencyInput } from '@/components/base/input/currency-input'
 import { Select } from '@/components/base/select/select'
 import { TextAreaBase } from '@/components/base/textarea/textarea'
@@ -231,15 +232,15 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             onChange={(value) => {
                               // Allow empty string while editing
                               if (value === '') {
-                                field.onChange('')
+                                field.onChange(undefined)
                               } else {
                                 const numValue = parseInt(value, 10)
-                                field.onChange(isNaN(numValue) ? '' : numValue)
+                                field.onChange(isNaN(numValue) ? undefined : numValue)
                               }
                             }}
                             onBlur={() => {
                               // If still empty on blur, set to 1
-                              if (field.value === '' || field.value === undefined || field.value === null) {
+                              if (!field.value) {
                                 field.onChange(1)
                               }
                             }}
@@ -415,15 +416,15 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                             onChange={(value) => {
                               // Allow empty string while editing
                               if (value === '') {
-                                field.onChange('')
+                                field.onChange(undefined)
                               } else {
                                 const numValue = parseInt(value, 10)
-                                field.onChange(isNaN(numValue) ? '' : numValue)
+                                field.onChange(isNaN(numValue) ? undefined : numValue)
                               }
                             }}
                             onBlur={() => {
                               // If still empty on blur, set to 24
-                              if (field.value === '' || field.value === undefined || field.value === null) {
+                              if (!field.value) {
                                 field.onChange(24)
                               }
                             }}
