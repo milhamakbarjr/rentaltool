@@ -16,9 +16,8 @@ import { Dialog, Modal, ModalOverlay } from '@/components/application/modals/mod
 import { Carousel, CarouselContext } from '@/components/application/carousel/carousel-base'
 import { Button } from '@/components/base/buttons/button'
 import { CloseButton } from '@/components/base/buttons/close-button'
-import { Input, TextField, InputBase } from '@/components/base/input/input'
+import { TextField, InputBase } from '@/components/base/input/input'
 import { Label } from '@/components/base/input/label'
-import { HintText } from '@/components/base/input/hint-text'
 import { CurrencyInput } from '@/components/base/input/currency-input'
 import { Select } from '@/components/base/select/select'
 import { TextAreaBase } from '@/components/base/textarea/textarea'
@@ -228,10 +227,21 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         render={({ field }) => (
                           <TextField
                             inputMode="numeric"
-                            value={String(field.value ?? '')}
+                            value={field.value === undefined || field.value === null ? '' : String(field.value)}
                             onChange={(value) => {
-                              const numValue = value === '' ? 1 : parseInt(value, 10)
-                              field.onChange(isNaN(numValue) ? 1 : numValue)
+                              // Allow empty string while editing
+                              if (value === '') {
+                                field.onChange('')
+                              } else {
+                                const numValue = parseInt(value, 10)
+                                field.onChange(isNaN(numValue) ? '' : numValue)
+                              }
+                            }}
+                            onBlur={() => {
+                              // If still empty on blur, set to 1
+                              if (field.value === '' || field.value === undefined || field.value === null) {
+                                field.onChange(1)
+                              }
                             }}
                           >
                             {({ isInvalid }) => (
@@ -401,10 +411,21 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         render={({ field }) => (
                           <TextField
                             inputMode="numeric"
-                            value={String(field.value ?? '')}
+                            value={field.value === undefined || field.value === null ? '' : String(field.value)}
                             onChange={(value) => {
-                              const numValue = value === '' ? 24 : parseInt(value, 10)
-                              field.onChange(isNaN(numValue) ? 24 : numValue)
+                              // Allow empty string while editing
+                              if (value === '') {
+                                field.onChange('')
+                              } else {
+                                const numValue = parseInt(value, 10)
+                                field.onChange(isNaN(numValue) ? '' : numValue)
+                              }
+                            }}
+                            onBlur={() => {
+                              // If still empty on blur, set to 24
+                              if (field.value === '' || field.value === undefined || field.value === null) {
+                                field.onChange(24)
+                              }
                             }}
                           >
                             {({ isInvalid }) => (

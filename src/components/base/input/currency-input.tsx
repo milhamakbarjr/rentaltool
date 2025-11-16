@@ -10,10 +10,8 @@
 'use client'
 
 import { useControlledState } from '@react-stately/utils'
-import { HintText } from '@/components/base/input/hint-text'
 import type { InputBaseProps } from '@/components/base/input/input'
-import { InputBase, TextField } from '@/components/base/input/input'
-import { Label } from '@/components/base/input/label'
+import { InputBase } from '@/components/base/input/input'
 import { InputGroup } from './input-group'
 import { formatIndonesianNumber, parseIndonesianNumber } from '@/lib/utils'
 
