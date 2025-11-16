@@ -243,7 +243,8 @@ export const NavAccountCard = ({
     // Fallback values if user or profile data is not available
     const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
     const displayEmail = user?.email || "";
-    const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`;
+    // Use uploaded avatar if available, otherwise fallback to DiceBear
+    const avatarUrl = profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`;
 
     return (
         <div ref={triggerRef} className="relative flex items-center gap-3 rounded-xl p-3 ring-1 ring-secondary ring-inset">

@@ -26,6 +26,7 @@ export interface Database {
           full_name: string | null
           business_name: string | null
           phone_number: string | null
+          avatar_url: string | null
           timezone: string
           currency: string
           created_at: string
@@ -37,6 +38,7 @@ export interface Database {
           full_name?: string | null
           business_name?: string | null
           phone_number?: string | null
+          avatar_url?: string | null
           timezone?: string
           currency?: string
           created_at?: string
@@ -48,6 +50,7 @@ export interface Database {
           full_name?: string | null
           business_name?: string | null
           phone_number?: string | null
+          avatar_url?: string | null
           timezone?: string
           currency?: string
           created_at?: string
