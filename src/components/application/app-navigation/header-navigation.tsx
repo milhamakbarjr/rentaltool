@@ -63,7 +63,6 @@ export const HeaderNavigationBase = ({
                 <aside className="flex h-full max-w-full flex-col justify-between overflow-auto border-r border-secondary bg-primary pt-4 lg:pt-6">
                     <div className="flex flex-col gap-5 px-4 lg:px-5">
                         <UntitledLogo className="h-8" />
-                        <Input shortcut size="sm" aria-label="Search" placeholder="Search" icon={SearchLg} />
                     </div>
 
                     <NavList items={items} />
