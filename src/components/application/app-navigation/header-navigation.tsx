@@ -73,13 +73,13 @@ export const HeaderNavigationBase = ({
                             {/* <NavItemBase type="link" href="#" icon={LifeBuoy01}>
                                 Support
                             </NavItemBase> */}
-                            <NavItemBase
+                            {/* <NavItemBase
                                 type="link"
                                 href="#"
                                 icon={Settings01}
                             >
                                 Settings
-                            </NavItemBase>
+                            </NavItemBase> */}
                         </div>
 
                         <NavAccountCard />
