@@ -20,6 +20,7 @@ import { setUserLocale } from "@/i18n/locale";
 import { localeConfigs, type Locale } from "@/i18n/config";
 import { cx } from "@/utils/cx";
 import { toast } from "sonner";
+import { getAvatarSignedUrl } from "@/lib/storage/avatar";
 
 export const NavAccountMenu = ({
     className,
@@ -239,12 +240,27 @@ export const NavAccountCard = ({
     const { user } = useAuth();
     const { profile } = useUserProfile();
     const [isOpen, setIsOpen] = useState(false);
+    const [avatarUrl, setAvatarUrl] = useState<string>("");
 
     // Fallback values if user or profile data is not available
     const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
     const displayEmail = user?.email || "";
-    // Use uploaded avatar if available, otherwise fallback to DiceBear
-    const avatarUrl = profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`;
+
+    // Generate signed URL for avatar when profile changes
+    useEffect(() => {
+        const loadAvatar = async () => {
+            if (profile?.avatar_url) {
+                // Generate signed URL for uploaded avatar
+                const signedUrl = await getAvatarSignedUrl(profile.avatar_url);
+                setAvatarUrl(signedUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`);
+            } else {
+                // Fallback to DiceBear initials
+                setAvatarUrl(`https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`);
+            }
+        };
+
+        loadAvatar();
+    }, [profile?.avatar_url, displayName]);
 
     return (
         <div ref={triggerRef} className="relative flex items-center gap-3 rounded-xl p-3 ring-1 ring-secondary ring-inset">

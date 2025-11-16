@@ -24,6 +24,7 @@ import {
   uploadAvatar,
   validateAvatarFile,
   deleteAvatar,
+  getAvatarSignedUrl,
 } from '@/lib/storage/avatar'
 
 const profileSchema = z.object({
@@ -61,14 +62,24 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
     },
   })
 
-  // Update form when profile loads
+  // Update form when profile loads and generate signed URL for avatar
   useEffect(() => {
     if (profile) {
       reset({
         fullName: profile.full_name || '',
         businessName: profile.business_name || '',
       })
-      setAvatarPreview(profile.avatar_url)
+
+      // Generate signed URL if avatar exists
+      if (profile.avatar_url) {
+        getAvatarSignedUrl(profile.avatar_url).then((signedUrl) => {
+          if (signedUrl) {
+            setAvatarPreview(signedUrl)
+          }
+        })
+      } else {
+        setAvatarPreview(null)
+      }
     }
   }, [profile, reset])
 
@@ -111,7 +122,7 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
       setIsLoading(true)
       const supabase = createClient()
 
-      let avatarUrl = profile?.avatar_url
+      let avatarPath = profile?.avatar_url
 
       // Upload new avatar if selected
       if (selectedFile) {
@@ -127,7 +138,7 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
           return
         }
 
-        avatarUrl = uploadResult.avatarUrl
+        avatarPath = uploadResult.filePath
       }
 
       // Update profile
@@ -136,7 +147,7 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
         .update({
           full_name: data.fullName,
           business_name: data.businessName,
-          avatar_url: avatarUrl,
+          avatar_url: avatarPath,
         })
         .eq('id', userId)
 
@@ -155,10 +166,17 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
     }
   }
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     reset()
     setSelectedFile(null)
-    setAvatarPreview(profile?.avatar_url || null)
+
+    // Regenerate signed URL when canceling
+    if (profile?.avatar_url) {
+      const signedUrl = await getAvatarSignedUrl(profile.avatar_url)
+      setAvatarPreview(signedUrl)
+    } else {
+      setAvatarPreview(null)
+    }
   }
 
   const getAvatarDisplay = () => {

@@ -1,7 +1,8 @@
 /**
  * Avatar Upload Utilities
  *
- * Functions for handling avatar uploads to Supabase Storage
+ * Functions for handling avatar uploads to Supabase Storage with signed URLs
+ * Uses private bucket with time-limited signed URLs for better security
  */
 
 import { createClient } from '@/lib/supabase/client'
@@ -9,6 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 const AVATAR_BUCKET = 'avatars'
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+const SIGNED_URL_EXPIRY = 3600 // 1 hour in seconds
 
 /**
  * Validate avatar file
@@ -32,11 +34,40 @@ export function validateAvatarFile(file: File): { valid: boolean; error?: string
 }
 
 /**
- * Upload avatar to Supabase Storage
+ * Generate signed URL for avatar with expiration time
+ * @param filePath - Storage path to the avatar file
+ * @param expiresIn - Expiration time in seconds (default: 1 hour)
+ */
+export async function getAvatarSignedUrl(
+  filePath: string,
+  expiresIn: number = SIGNED_URL_EXPIRY
+): Promise<string | null> {
+  try {
+    const supabase = createClient()
+
+    const { data, error } = await supabase.storage
+      .from(AVATAR_BUCKET)
+      .createSignedUrl(filePath, expiresIn)
+
+    if (error) {
+      console.error('Signed URL error:', error)
+      return null
+    }
+
+    return data.signedUrl
+  } catch (error) {
+    console.error('Avatar signed URL error:', error)
+    return null
+  }
+}
+
+/**
+ * Upload avatar to Supabase Storage (private bucket)
+ * Returns file path to be stored in database
  */
 export async function uploadAvatar(userId: string, file: File): Promise<{
   success: boolean
-  avatarUrl?: string
+  filePath?: string
   error?: string
 }> {
   try {
@@ -66,14 +97,9 @@ export async function uploadAvatar(userId: string, file: File): Promise<{
       return { success: false, error: 'Failed to upload avatar' }
     }
 
-    // Get public URL
-    const { data: urlData } = supabase.storage
-      .from(AVATAR_BUCKET)
-      .getPublicUrl(filePath)
-
     return {
       success: true,
-      avatarUrl: urlData.publicUrl,
+      filePath: filePath,
     }
   } catch (error) {
     console.error('Avatar upload error:', error)
@@ -82,22 +108,36 @@ export async function uploadAvatar(userId: string, file: File): Promise<{
 }
 
 /**
- * Delete old avatar from storage
+ * Delete avatar from storage
+ * @param filePath - Can be either a file path or a full URL
  */
-export async function deleteAvatar(avatarUrl: string): Promise<boolean> {
+export async function deleteAvatar(filePath: string): Promise<boolean> {
   try {
     const supabase = createClient()
 
-    // Extract file path from URL
-    const url = new URL(avatarUrl)
-    const pathParts = url.pathname.split(`${AVATAR_BUCKET}/`)
-    if (pathParts.length < 2) return false
+    // Extract file path if a URL is provided
+    let cleanPath = filePath
 
-    const filePath = pathParts[1]
+    // If it's a URL, extract the path
+    if (filePath.startsWith('http')) {
+      try {
+        const url = new URL(filePath)
+        const pathParts = url.pathname.split(`${AVATAR_BUCKET}/`)
+        if (pathParts.length >= 2) {
+          cleanPath = pathParts[1].split('?')[0] // Remove query params if present
+        }
+      } catch {
+        // If URL parsing fails, try to extract path directly
+        const match = filePath.match(/avatars\/(.+?)(\?|$)/)
+        if (match) {
+          cleanPath = match[1]
+        }
+      }
+    }
 
     const { error } = await supabase.storage
       .from(AVATAR_BUCKET)
-      .remove([filePath])
+      .remove([cleanPath])
 
     if (error) {
       console.error('Delete error:', error)
@@ -112,18 +152,18 @@ export async function deleteAvatar(avatarUrl: string): Promise<boolean> {
 }
 
 /**
- * Update user profile with new avatar URL
+ * Update user profile with new avatar file path
  */
 export async function updateProfileAvatar(
   userId: string,
-  avatarUrl: string
+  filePath: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = createClient()
 
     const { error } = await supabase
       .from('profiles')
-      .update({ avatar_url: avatarUrl })
+      .update({ avatar_url: filePath })
       .eq('id', userId)
 
     if (error) {
