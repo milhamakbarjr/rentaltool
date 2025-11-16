@@ -21,8 +21,8 @@ interface DatePickerProps extends AriaDatePickerProps<DateValue> {
 
 export const DatePicker = ({ value: valueProp, defaultValue, onChange, onApply, onCancel, ...props }: DatePickerProps) => {
     const formatter = useDateFormatter({
-        month: "short",
-        day: "numeric",
+        day: "2-digit",
+        month: "2-digit",
         year: "numeric",
     });
     const [value, setValue] = useControlledState(valueProp, defaultValue || null, onChange);
