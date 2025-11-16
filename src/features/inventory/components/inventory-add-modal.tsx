@@ -12,8 +12,10 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Package } from '@untitledui/icons'
 import { DialogTrigger as AriaDialogTrigger, Heading as AriaHeading } from 'react-aria-components'
+import { parseDate, CalendarDate } from '@internationalized/date'
 import { Dialog, Modal, ModalOverlay } from '@/components/application/modals/modal'
 import { Carousel, CarouselContext } from '@/components/application/carousel/carousel-base'
+import { DatePicker } from '@/components/application/date-picker/date-picker'
 import { Button } from '@/components/base/buttons/button'
 import { CloseButton } from '@/components/base/buttons/close-button'
 import { Input, TextField, InputBase } from '@/components/base/input/input'
@@ -470,24 +472,32 @@ export function InventoryAddModal({ isOpen, onOpenChange }: InventoryAddModalPro
                         name="purchase_date"
                         control={control}
                         render={({ field }) => (
-                          <TextField
-                            value={field.value || ''}
-                            onChange={field.onChange}
-                          >
-                            {({ isInvalid }) => (
-                              <>
-                                <Label>Purchase Date</Label>
-                                <InputBase
-                                  size="md"
-                                  type="date"
-                                  placeholder="YYYY-MM-DD"
-                                />
-                                {errors.purchase_date && (
-                                  <HintText isInvalid>{errors.purchase_date.message}</HintText>
-                                )}
-                              </>
+                          <div className="flex flex-col gap-1.5">
+                            <Label>Purchase Date</Label>
+                            <DatePicker
+                              value={field.value ? parseDate(field.value) : null}
+                              onChange={(date) => {
+                                // Convert CalendarDate to YYYY-MM-DD string format
+                                if (date) {
+                                  const year = date.year
+                                  const month = String(date.month).padStart(2, '0')
+                                  const day = String(date.day).padStart(2, '0')
+                                  field.onChange(`${year}-${month}-${day}`)
+                                } else {
+                                  field.onChange('')
+                                }
+                              }}
+                              onApply={() => {
+                                // Date is already set via onChange
+                              }}
+                              onCancel={() => {
+                                // Optionally reset to previous value
+                              }}
+                            />
+                            {errors.purchase_date && (
+                              <HintText isInvalid>{errors.purchase_date.message}</HintText>
                             )}
-                          </TextField>
+                          </div>
                         )}
                       />
                     </div>
