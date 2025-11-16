@@ -1,5 +1,6 @@
 "use client";
 
+import { createContext, useContext } from "react";
 import type { PropsWithChildren } from "react";
 import { X as CloseIcon, Menu02 } from "@untitledui/icons";
 import {
@@ -11,6 +12,11 @@ import {
 } from "react-aria-components";
 import { UntitledLogo } from "@/components/foundations/logo/untitledui-logo";
 import { cx } from "@/utils/cx";
+
+// Context to provide the dialog close function to navigation items
+const MobileNavCloseContext = createContext<(() => void) | null>(null);
+
+export const useMobileNavClose = () => useContext(MobileNavCloseContext);
 
 export const MobileNavigationHeader = ({ children }: PropsWithChildren) => {
     return (
@@ -48,7 +54,9 @@ export const MobileNavigationHeader = ({ children }: PropsWithChildren) => {
                         </AriaButton>
 
                         <AriaModal className="w-full cursor-auto will-change-transform">
-                            <AriaDialog className="h-dvh outline-hidden focus:outline-hidden">{children}</AriaDialog>
+                            <AriaDialog className="h-dvh outline-hidden focus:outline-hidden">
+                                <MobileNavCloseContext.Provider value={() => state.close()}>{children}</MobileNavCloseContext.Provider>
+                            </AriaDialog>
                         </AriaModal>
                     </>
                 )}
