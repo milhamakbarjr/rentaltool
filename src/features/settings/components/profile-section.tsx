@@ -4,6 +4,7 @@
  * Profile Section
  *
  * Form for managing user profile information with avatar upload
+ * Using Untitled UI layout components for consistent design
  */
 
 import { useState, useEffect } from 'react'
@@ -11,11 +12,14 @@ import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User01 } from '@untitledui/icons'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { FileTrigger } from '@/components/base/file-upload-trigger/file-upload-trigger'
+import { SectionHeader } from '@/components/application/section-headers/section-headers'
+import { SectionLabel } from '@/components/application/section-headers/section-label'
+import { SectionFooter } from '@/components/application/section-footers/section-footer'
+import { FileUploadDropZone } from '@/components/application/file-upload/file-upload-base'
+import { Avatar } from '@/components/base/avatar/avatar'
+import { Button } from '@/components/base/buttons/button'
+import { TextField, InputBase } from '@/components/base/input/input'
+import { Label } from '@/components/base/input/label'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useUserProfile } from '@/hooks/use-user-profile'
@@ -83,7 +87,7 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
     }
   }, [profile, reset])
 
-  const handleAvatarSelect = (files: FileList | null) => {
+  const handleAvatarDrop = (files: FileList) => {
     if (!files || files.length === 0) return
 
     const file = files[0]
@@ -190,119 +194,171 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Avatar Upload Section */}
-      <div className="space-y-4">
-        <Label>Profile Picture</Label>
-        <div className="flex items-center gap-6">
-          {/* Avatar Preview */}
-          <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-gray-200 bg-gray-50">
-            {avatarPreview || profile?.avatar_url || profile?.full_name ? (
-              <img
-                src={getAvatarDisplay()}
-                alt="Profile avatar"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gray-100">
-                <User01 className="h-12 w-12 text-gray-400" />
-              </div>
-            )}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <SectionHeader.Root>
+        <SectionHeader.Group>
+          <div className="flex flex-1 flex-col justify-center gap-0.5 self-stretch">
+            <SectionHeader.Heading>Personal info</SectionHeader.Heading>
+            <SectionHeader.Subheading>
+              Update your photo and personal details here.
+            </SectionHeader.Subheading>
           </div>
 
-          {/* Upload Button */}
-          <div className="flex flex-col gap-2">
-            <FileTrigger
-              acceptedFileTypes={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
-              onSelect={handleAvatarSelect}
+          <SectionHeader.Actions>
+            <Button
+              color="secondary"
+              size="md"
+              type="button"
+              onClick={handleCancel}
+              disabled={isLoading || (!isDirty && !selectedFile)}
             >
-              <Button type="button" variant="secondary">
-                {selectedFile ? 'Change Photo' : 'Upload Photo'}
-              </Button>
-            </FileTrigger>
-            <p className="text-xs text-gray-500">
-              JPG, PNG or WebP. Max 2MB.
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              color="primary"
+              size="md"
+              type="submit"
+              disabled={isLoading || profileLoading}
+            >
+              {isLoading ? tCommon('loading') : tCommon('save')}
+            </Button>
+          </SectionHeader.Actions>
+        </SectionHeader.Group>
+      </SectionHeader.Root>
+
+      {/* Form content */}
+      <div className="flex flex-col gap-5">
+        {/* Full Name */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(200px,280px)_minmax(400px,512px)] lg:gap-8">
+          <SectionLabel.Root
+            isRequired
+            size="sm"
+            title="Full name"
+            className="max-lg:hidden"
+          />
+
+          <TextField isRequired name="fullName" {...register('fullName')}>
+            <Label className="lg:hidden">Full name</Label>
+            <InputBase size="md" />
+            {errors.fullName && (
+              <p className="text-sm text-error">{errors.fullName.message}</p>
+            )}
+          </TextField>
+        </div>
+
+        <hr className="h-px w-full border-none bg-border-secondary" />
+
+        {/* Business Name */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(200px,280px)_minmax(400px,512px)] lg:gap-8">
+          <SectionLabel.Root
+            size="sm"
+            title="Business name"
+            description="Optional business or company name"
+            className="max-lg:hidden"
+          />
+
+          <TextField name="businessName" {...register('businessName')}>
+            <Label className="lg:hidden">Business name (optional)</Label>
+            <InputBase size="md" />
+            {errors.businessName && (
+              <p className="text-sm text-error">{errors.businessName.message}</p>
+            )}
+          </TextField>
+        </div>
+
+        <hr className="h-px w-full border-none bg-border-secondary" />
+
+        {/* Email (read-only) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(200px,280px)_minmax(400px,512px)] lg:gap-8">
+          <SectionLabel.Root
+            size="sm"
+            title="Email address"
+            description="Your account email cannot be changed"
+            className="max-lg:hidden"
+          />
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="lg:hidden">Email address</Label>
+            <InputBase size="md" value={userEmail} disabled />
+            <p className="text-sm text-tertiary">Email cannot be changed</p>
+          </div>
+        </div>
+
+        <hr className="h-px w-full border-none bg-border-secondary" />
+
+        {/* Avatar Upload */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(200px,280px)_minmax(400px,512px)] lg:gap-8">
+          <SectionLabel.Root
+            size="sm"
+            title="Your photo"
+            description="This will be displayed on your profile."
+          />
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
+            <Avatar size="2xl" src={getAvatarDisplay()} />
+
+            <FileUploadDropZone
+              className="w-full"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              allowsMultiple={false}
+              maxSize={2 * 1024 * 1024}
+              hint="JPG, PNG or WebP (max. 2MB)"
+              onDropFiles={handleAvatarDrop}
+              onSizeLimitExceed={() => toast.error('File size too large. Maximum size is 2MB.')}
+              onDropUnacceptedFiles={() =>
+                toast.error('Invalid file type. Please upload a JPG, PNG, or WebP image.')
+              }
+            />
+          </div>
+        </div>
+
+        <hr className="h-px w-full border-none bg-border-secondary" />
+
+        {/* Password Reset */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(200px,280px)_minmax(400px,512px)] lg:gap-8">
+          <SectionLabel.Root
+            size="sm"
+            title="Password"
+            description="Reset your account password"
+          />
+
+          <div className="flex flex-col gap-2">
+            <Button
+              color="secondary"
+              size="md"
+              type="button"
+              onClick={handleResetPassword}
+              disabled={isResettingPassword}
+            >
+              {isResettingPassword ? 'Sending...' : 'Reset Password'}
+            </Button>
+            <p className="text-sm text-tertiary">
+              Click to receive a password reset email
             </p>
           </div>
         </div>
       </div>
 
-      {/* Full Name */}
-      <div className="space-y-2">
-        <Label htmlFor="fullName">{tAuth('fullName')}</Label>
-        <Input
-          id="fullName"
-          type="text"
-          {...register('fullName')}
-          placeholder="Enter your full name"
-        />
-        {errors.fullName && (
-          <p className="text-sm text-red-600">{errors.fullName.message}</p>
-        )}
-      </div>
-
-      {/* Business Name */}
-      <div className="space-y-2">
-        <Label htmlFor="businessName">{tAuth('businessName')}</Label>
-        <Input
-          id="businessName"
-          type="text"
-          {...register('businessName')}
-          placeholder="Enter your business name (optional)"
-        />
-        {errors.businessName && (
-          <p className="text-sm text-red-600">{errors.businessName.message}</p>
-        )}
-      </div>
-
-      {/* Email (read-only) */}
-      <div className="space-y-2">
-        <Label htmlFor="email">{tAuth('email')}</Label>
-        <Input
-          id="email"
-          type="email"
-          value={userEmail}
-          disabled
-          className="bg-gray-50"
-        />
-        <p className="text-xs text-gray-500">Email cannot be changed</p>
-      </div>
-
-      {/* Reset Password Button */}
-      <div className="space-y-2">
-        <Label>Password</Label>
-        <div>
+      <SectionFooter.Root>
+        <SectionFooter.Actions>
           <Button
+            color="secondary"
+            size="md"
             type="button"
-            variant="secondary"
-            onClick={handleResetPassword}
-            disabled={isResettingPassword}
+            onClick={handleCancel}
+            disabled={isLoading || (!isDirty && !selectedFile)}
           >
-            {isResettingPassword ? 'Sending...' : 'Reset Password'}
+            {tCommon('cancel')}
           </Button>
-          <p className="mt-2 text-xs text-gray-500">
-            Click to receive a password reset email
-          </p>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={handleCancel}
-          disabled={isLoading || (!isDirty && !selectedFile)}
-        >
-          {tCommon('cancel')}
-        </Button>
-        <Button
-          type="submit"
-          disabled={isLoading || profileLoading}
-        >
-          {isLoading ? tCommon('loading') : tCommon('save')}
-        </Button>
-      </div>
+          <Button
+            color="primary"
+            size="md"
+            type="submit"
+            disabled={isLoading || profileLoading}
+          >
+            {isLoading ? tCommon('loading') : tCommon('save')}
+          </Button>
+        </SectionFooter.Actions>
+      </SectionFooter.Root>
     </form>
   )
 }
