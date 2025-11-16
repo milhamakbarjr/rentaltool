@@ -95,7 +95,7 @@ export const NavAccountMenu = ({
 
     const handleAccountSettings = () => {
         onClose?.();
-        router.push("/dashboard/settings");
+        router.push("/settings");
     };
 
     const handleLanguageChange = async (newLocale: Locale) => {
