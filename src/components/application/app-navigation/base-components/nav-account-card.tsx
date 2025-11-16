@@ -1,55 +1,50 @@
 "use client";
 
 import type { FC, HTMLAttributes } from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import type { Placement } from "@react-types/overlays";
-import { BookOpen01, ChevronSelectorVertical, LogOut01, Plus, Settings01, User01 } from "@untitledui/icons";
+import { ChevronSelectorVertical, LogOut01, Settings01, Globe01, Moon01, Sun } from "@untitledui/icons";
 import { useFocusManager } from "react-aria";
 import type { DialogProps as AriaDialogProps } from "react-aria-components";
 import { Button as AriaButton, Dialog as AriaDialog, DialogTrigger as AriaDialogTrigger, Popover as AriaPopover } from "react-aria-components";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { AvatarLabelGroup } from "@/components/base/avatar/avatar-label-group";
-import { Button } from "@/components/base/buttons/button";
-import { RadioButtonBase } from "@/components/base/radio-buttons/radio-buttons";
+import { Toggle } from "@/components/base/toggle/toggle";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
+import { useAuth } from "@/hooks/use-auth";
+import { useUserProfile } from "@/hooks/use-user-profile";
+import { signOut } from "@/lib/auth/auth";
+import { setUserLocale } from "@/i18n/locale";
+import { localeConfigs, type Locale } from "@/i18n/config";
 import { cx } from "@/utils/cx";
-
-type NavAccountType = {
-    /** Unique identifier for the nav item. */
-    id: string;
-    /** Name of the account holder. */
-    name: string;
-    /** Email address of the account holder. */
-    email: string;
-    /** Avatar image URL. */
-    avatar: string;
-    /** Online status of the account holder. This is used to display the online status indicator. */
-    status: "online" | "offline";
-};
-
-const placeholderAccounts: NavAccountType[] = [
-    {
-        id: "olivia",
-        name: "Olivia Rhye",
-        email: "olivia@untitledui.com",
-        avatar: "https://www.untitledui.com/images/avatars/olivia-rhye?fm=webp&q=80",
-        status: "online",
-    },
-    {
-        id: "sienna",
-        name: "Sienna Hewitt",
-        email: "sienna@untitledui.com",
-        avatar: "https://www.untitledui.com/images/avatars/transparent/sienna-hewitt?bg=%23E0E0E0",
-        status: "online",
-    },
-];
+import { toast } from "sonner";
 
 export const NavAccountMenu = ({
     className,
-    selectedAccountId = "olivia",
+    onClose,
     ...dialogProps
-}: AriaDialogProps & { className?: string; accounts?: NavAccountType[]; selectedAccountId?: string }) => {
+}: AriaDialogProps & { className?: string; onClose?: () => void }) => {
     const focusManager = useFocusManager();
     const dialogRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const t = useTranslations("common");
+    const { theme, setTheme } = useTheme();
+    const [isSigningOut, setIsSigningOut] = useState(false);
+    const [currentLocale, setCurrentLocale] = useState<Locale>("id");
+    const [isPending, startTransition] = useTransition();
+
+    // Get current locale from cookie
+    useEffect(() => {
+        const locale = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("NEXT_LOCALE="))
+            ?.split("=")[1] as Locale | undefined;
+        if (locale) {
+            setCurrentLocale(locale);
+        }
+    }, []);
 
     const onKeyDown = useCallback(
         (e: KeyboardEvent) => {
@@ -78,6 +73,48 @@ export const NavAccountMenu = ({
         };
     }, [onKeyDown]);
 
+    const handleSignOut = async () => {
+        try {
+            setIsSigningOut(true);
+            const { error } = await signOut();
+            if (error) {
+                toast.error("Failed to sign out");
+                console.error("Sign out error:", error);
+                return;
+            }
+            // Redirect to login page
+            router.push("/login");
+        } catch (error) {
+            console.error("Sign out error:", error);
+            toast.error("Failed to sign out");
+        } finally {
+            setIsSigningOut(false);
+        }
+    };
+
+    const handleAccountSettings = () => {
+        onClose?.();
+        router.push("/dashboard/settings");
+    };
+
+    const handleLanguageChange = async (newLocale: Locale) => {
+        try {
+            setCurrentLocale(newLocale);
+            await setUserLocale(newLocale);
+            toast.success("Language updated");
+
+            // Refresh the page to apply new locale
+            startTransition(() => {
+                window.location.reload();
+            });
+        } catch (error) {
+            console.error("Language change error:", error);
+            toast.error("Failed to change language");
+        }
+    };
+
+    const isDarkMode = theme === "dark";
+
     return (
         <AriaDialog
             {...dialogProps}
@@ -86,38 +123,66 @@ export const NavAccountMenu = ({
         >
             <div className="rounded-xl bg-primary ring-1 ring-secondary">
                 <div className="flex flex-col gap-0.5 py-1.5">
-                    <NavAccountCardMenuItem label="View profile" icon={User01} shortcut="⌘K->P" />
-                    <NavAccountCardMenuItem label="Account settings" icon={Settings01} shortcut="⌘S" />
-                    <NavAccountCardMenuItem label="Documentation" icon={BookOpen01} />
+                    <NavAccountCardMenuItem
+                        label="Account settings"
+                        icon={Settings01}
+                        onClick={handleAccountSettings}
+                    />
                 </div>
-                <div className="flex flex-col gap-0.5 border-t border-secondary py-1.5">
-                    <div className="px-3 pt-1.5 pb-1 text-xs font-semibold text-tertiary">Switch account</div>
 
-                    <div className="flex flex-col gap-0.5 px-1.5">
-                        {placeholderAccounts.map((account) => (
+                {/* Language Selector */}
+                <div className="border-t border-secondary px-3 py-3">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Globe01 className="size-4 text-fg-quaternary" />
+                        <span className="text-xs font-semibold text-tertiary">Language</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        {Object.entries(localeConfigs).map(([key, config]) => (
                             <button
-                                key={account.id}
+                                key={key}
+                                onClick={() => handleLanguageChange(key as Locale)}
+                                disabled={isPending}
                                 className={cx(
-                                    "relative w-full cursor-pointer rounded-md px-2 py-1.5 text-left outline-focus-ring hover:bg-primary_hover focus:z-10 focus-visible:outline-2 focus-visible:outline-offset-2",
-                                    account.id === selectedAccountId && "bg-primary_hover",
+                                    "flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm outline-focus-ring transition hover:bg-primary_hover focus-visible:outline-2 focus-visible:outline-offset-2",
+                                    currentLocale === key && "bg-primary_hover font-medium",
+                                    isPending && "cursor-not-allowed opacity-50",
                                 )}
                             >
-                                <AvatarLabelGroup status="online" size="md" src={account.avatar} title={account.name} subtitle={account.email} />
-
-                                <RadioButtonBase isSelected={account.id === selectedAccountId} className="absolute top-2 right-2" />
+                                <span>{config.flag}</span>
+                                <span className="text-secondary">{config.nativeName}</span>
                             </button>
                         ))}
                     </div>
                 </div>
-                <div className="flex flex-col gap-2 px-2 pt-0.5 pb-2">
-                    <Button iconLeading={Plus} color="secondary" size="sm">
-                        Add account
-                    </Button>
+
+                {/* Theme Toggle */}
+                <div className="border-t border-secondary px-3 py-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            {isDarkMode ? (
+                                <Moon01 className="size-4 text-fg-quaternary" />
+                            ) : (
+                                <Sun className="size-4 text-fg-quaternary" />
+                            )}
+                            <span className="text-xs font-semibold text-tertiary">Dark mode</span>
+                        </div>
+                        <Toggle
+                            size="sm"
+                            slim
+                            isSelected={isDarkMode}
+                            onChange={(selected) => setTheme(selected ? "dark" : "light")}
+                        />
+                    </div>
                 </div>
             </div>
 
             <div className="pt-1 pb-1.5">
-                <NavAccountCardMenuItem label="Sign out" icon={LogOut01} shortcut="⌥⇧Q" />
+                <NavAccountCardMenuItem
+                    label={isSigningOut ? "Signing out..." : "Sign out"}
+                    icon={LogOut01}
+                    onClick={handleSignOut}
+                    disabled={isSigningOut}
+                />
             </div>
         </AriaDialog>
     );
@@ -127,14 +192,24 @@ const NavAccountCardMenuItem = ({
     icon: Icon,
     label,
     shortcut,
+    disabled,
     ...buttonProps
 }: {
     icon?: FC<{ className?: string }>;
     label: string;
     shortcut?: string;
+    disabled?: boolean;
 } & HTMLAttributes<HTMLButtonElement>) => {
     return (
-        <button {...buttonProps} className={cx("group/item w-full cursor-pointer px-1.5 focus:outline-hidden", buttonProps.className)}>
+        <button
+            {...buttonProps}
+            disabled={disabled}
+            className={cx(
+                "group/item w-full cursor-pointer px-1.5 focus:outline-hidden",
+                disabled && "cursor-not-allowed opacity-50",
+                buttonProps.className,
+            )}
+        >
             <div
                 className={cx(
                     "flex w-full items-center justify-between gap-3 rounded-md p-2 group-hover/item:bg-primary_hover",
@@ -156,37 +231,32 @@ const NavAccountCardMenuItem = ({
 
 export const NavAccountCard = ({
     popoverPlacement,
-    selectedAccountId = "olivia",
-    items = placeholderAccounts,
 }: {
     popoverPlacement?: Placement;
-    selectedAccountId?: string;
-    items?: NavAccountType[];
 }) => {
     const triggerRef = useRef<HTMLDivElement>(null);
     const isDesktop = useBreakpoint("lg");
+    const { user } = useAuth();
+    const { profile } = useUserProfile();
+    const [isOpen, setIsOpen] = useState(false);
 
-    const selectedAccount = placeholderAccounts.find((account) => account.id === selectedAccountId);
-
-    if (!selectedAccount) {
-        if (process.env.NODE_ENV === "development") {
-            console.warn(`Account with ID ${selectedAccountId} not found in <NavAccountCard />`);
-        }
-        return null;
-    }
+    // Fallback values if user or profile data is not available
+    const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
+    const displayEmail = user?.email || "";
+    const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`;
 
     return (
         <div ref={triggerRef} className="relative flex items-center gap-3 rounded-xl p-3 ring-1 ring-secondary ring-inset">
             <AvatarLabelGroup
                 size="md"
-                src={selectedAccount.avatar}
-                title={selectedAccount.name}
-                subtitle={selectedAccount.email}
-                status={selectedAccount.status}
+                src={avatarUrl}
+                title={displayName}
+                subtitle={displayEmail}
+                status="online"
             />
 
             <div className="absolute top-1.5 right-1.5">
-                <AriaDialogTrigger>
+                <AriaDialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
                     <AriaButton className="flex cursor-pointer items-center justify-center rounded-md p-1.5 text-fg-quaternary outline-focus-ring transition duration-100 ease-linear hover:bg-primary_hover hover:text-fg-quaternary_hover focus-visible:outline-2 focus-visible:outline-offset-2 pressed:bg-primary_hover pressed:text-fg-quaternary_hover">
                         <ChevronSelectorVertical className="size-4 shrink-0" />
                     </AriaButton>
@@ -204,7 +274,7 @@ export const NavAccountCard = ({
                             )
                         }
                     >
-                        <NavAccountMenu selectedAccountId={selectedAccountId} accounts={items} />
+                        <NavAccountMenu onClose={() => setIsOpen(false)} />
                     </AriaPopover>
                 </AriaDialogTrigger>
             </div>
