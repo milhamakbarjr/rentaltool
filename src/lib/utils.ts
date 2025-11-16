@@ -237,3 +237,61 @@ export function downloadFile(data: string | Blob, filename: string): void {
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
 }
+
+/**
+ * Format number with Indonesian thousand separators (dots)
+ * @param value - Number to format
+ * @returns Formatted string (e.g., 1000000 → "1.000.000")
+ */
+export function formatIndonesianNumber(value: number | null | undefined): string {
+  if (value === null || value === undefined || isNaN(value)) return ''
+
+  // Convert to string and split by decimal point
+  const parts = value.toString().split('.')
+  const integerPart = parts[0]
+  const decimalPart = parts[1]
+
+  // Add dots as thousand separators
+  const formatted = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+
+  // Add decimal part if exists (Indonesian Rupiah typically doesn't use decimals, but handle it anyway)
+  return decimalPart ? `${formatted},${decimalPart}` : formatted
+}
+
+/**
+ * Parse Indonesian formatted number string to number
+ * @param value - Formatted string (e.g., "1.000.000" or "1.000.000,50")
+ * @returns Number value
+ */
+export function parseIndonesianNumber(value: string | number | null | undefined): number | null {
+  // Handle non-string values
+  if (value === null || value === undefined) return null
+  if (typeof value === 'number') return value
+
+  const strValue = String(value).trim()
+  if (strValue === '') return null
+
+  // Remove dots (thousand separators) and replace comma (decimal separator) with dot
+  const cleaned = strValue.replace(/\./g, '').replace(/,/g, '.')
+  const parsed = Number(cleaned)
+
+  return isNaN(parsed) ? null : parsed
+}
+
+/**
+ * Format date in Indonesian locale
+ */
+export function formatDate(date: Date | string, locale: string = 'id-ID'): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  
+  // Check if the date is valid
+  if (isNaN(d.getTime())) {
+    throw new Error('Invalid date provided to formatDate')
+  }
+  
+  return new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(d)
+}
