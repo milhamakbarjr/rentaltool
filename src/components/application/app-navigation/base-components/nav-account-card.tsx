@@ -21,6 +21,7 @@ import { localeConfigs, type Locale } from "@/i18n/config";
 import { cx } from "@/utils/cx";
 import { toast } from "sonner";
 import { getAvatarSignedUrl } from "@/lib/storage/avatar";
+import { useMobileNavClose } from "./mobile-header";
 
 export const NavAccountMenu = ({
     className,
@@ -35,6 +36,7 @@ export const NavAccountMenu = ({
     const [isSigningOut, setIsSigningOut] = useState(false);
     const [currentLocale, setCurrentLocale] = useState<Locale>("id");
     const [isPending, startTransition] = useTransition();
+    const closeMobileNav = useMobileNavClose();
 
     // Get current locale from cookie
     useEffect(() => {
@@ -95,6 +97,7 @@ export const NavAccountMenu = ({
 
     const handleAccountSettings = () => {
         onClose?.();
+        closeMobileNav?.();
         router.push("/settings");
     };
 
