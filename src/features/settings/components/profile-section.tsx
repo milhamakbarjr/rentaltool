@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { IconNotification } from '@/components/application/notifications/notifications'
 import { createClient } from '@/lib/supabase/client'
 
 const profileSchema = z.object({
@@ -58,10 +59,24 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
 
       if (error) throw error
 
-      toast.success(t('profileUpdated'))
+      toast.custom((toastId) => (
+        <IconNotification
+          title={t('profileUpdated')}
+          description="Your profile has been successfully updated."
+          color="success"
+          onClose={() => toast.dismiss(toastId)}
+        />
+      ))
     } catch (error) {
       console.error('Profile update error:', error)
-      toast.error(t('profileError'))
+      toast.custom((toastId) => (
+        <IconNotification
+          title={t('profileError')}
+          description="Failed to update profile. Please try again."
+          color="error"
+          onClose={() => toast.dismiss(toastId)}
+        />
+      ))
     } finally {
       setIsLoading(false)
     }

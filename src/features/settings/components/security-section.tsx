@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { IconNotification } from '@/components/application/notifications/notifications'
 import { createClient } from '@/lib/supabase/client'
 
 const passwordSchema = z
@@ -65,11 +66,25 @@ export function SecuritySection() {
 
       if (error) throw error
 
-      toast.success(t('passwordUpdated'))
+      toast.custom((toastId) => (
+        <IconNotification
+          title={t('passwordUpdated')}
+          description="Your password has been successfully updated."
+          color="success"
+          onClose={() => toast.dismiss(toastId)}
+        />
+      ))
       reset()
     } catch (error) {
       console.error('Password update error:', error)
-      toast.error(t('passwordError'))
+      toast.custom((toastId) => (
+        <IconNotification
+          title={t('passwordError')}
+          description="Failed to update password. Please try again."
+          color="error"
+          onClose={() => toast.dismiss(toastId)}
+        />
+      ))
     } finally {
       setIsLoading(false)
     }

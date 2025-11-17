@@ -14,6 +14,7 @@ import { z } from 'zod'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { IconNotification } from '@/components/application/notifications/notifications'
 import { setUserLocale } from '@/i18n/locale'
 import { localeConfigs, type Locale, currencies, timezones } from '@/i18n/config'
 import {
@@ -78,7 +79,14 @@ export function RegionalSection() {
       localStorage.setItem('user_timezone', data.timezone)
       localStorage.setItem('user_date_format', data.dateFormat)
 
-      toast.success(t('settingsSaved'))
+      toast.custom((toastId) => (
+        <IconNotification
+          title={t('settingsSaved')}
+          description="Your regional settings have been successfully updated."
+          color="success"
+          onClose={() => toast.dismiss(toastId)}
+        />
+      ))
 
       // Refresh the page to apply new locale
       startTransition(() => {
@@ -86,7 +94,14 @@ export function RegionalSection() {
       })
     } catch (error) {
       console.error('Settings update error:', error)
-      toast.error(tCommon('error'))
+      toast.custom((toastId) => (
+        <IconNotification
+          title={tCommon('error')}
+          description="Failed to save settings. Please try again."
+          color="error"
+          onClose={() => toast.dismiss(toastId)}
+        />
+      ))
     } finally {
       setIsLoading(false)
     }

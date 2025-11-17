@@ -20,6 +20,7 @@ import { setUserLocale } from "@/i18n/locale";
 import { localeConfigs, type Locale } from "@/i18n/config";
 import { cx } from "@/utils/cx";
 import { toast } from "sonner";
+import { IconNotification } from "@/components/application/notifications/notifications";
 
 export const NavAccountMenu = ({
     className,
@@ -78,7 +79,14 @@ export const NavAccountMenu = ({
             setIsSigningOut(true);
             const { error } = await signOut();
             if (error) {
-                toast.error("Failed to sign out");
+                toast.custom((toastId) => (
+                    <IconNotification
+                        title="Sign out failed"
+                        description="Failed to sign out. Please try again."
+                        color="error"
+                        onClose={() => toast.dismiss(toastId)}
+                    />
+                ));
                 console.error("Sign out error:", error);
                 return;
             }
@@ -86,7 +94,14 @@ export const NavAccountMenu = ({
             router.push("/login");
         } catch (error) {
             console.error("Sign out error:", error);
-            toast.error("Failed to sign out");
+            toast.custom((toastId) => (
+                <IconNotification
+                    title="Sign out failed"
+                    description="Failed to sign out. Please try again."
+                    color="error"
+                    onClose={() => toast.dismiss(toastId)}
+                />
+            ));
         } finally {
             setIsSigningOut(false);
         }
@@ -101,7 +116,14 @@ export const NavAccountMenu = ({
         try {
             setCurrentLocale(newLocale);
             await setUserLocale(newLocale);
-            toast.success("Language updated");
+            toast.custom((toastId) => (
+                <IconNotification
+                    title="Language updated"
+                    description="Your language preference has been successfully updated."
+                    color="success"
+                    onClose={() => toast.dismiss(toastId)}
+                />
+            ));
 
             // Refresh the page to apply new locale
             startTransition(() => {
@@ -109,7 +131,14 @@ export const NavAccountMenu = ({
             });
         } catch (error) {
             console.error("Language change error:", error);
-            toast.error("Failed to change language");
+            toast.custom((toastId) => (
+                <IconNotification
+                    title="Language change failed"
+                    description="Failed to change language. Please try again."
+                    color="error"
+                    onClose={() => toast.dismiss(toastId)}
+                />
+            ));
         }
     };
 
