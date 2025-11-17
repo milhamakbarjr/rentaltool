@@ -223,26 +223,6 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
               Update your photo and personal details here.
             </SectionHeader.Subheading>
           </div>
-
-          <SectionHeader.Actions>
-            <Button
-              color="secondary"
-              size="md"
-              type="button"
-              onClick={handleCancel}
-              disabled={isLoading || (!isDirty && !selectedFile)}
-            >
-              {tCommon('cancel')}
-            </Button>
-            <Button
-              color="primary"
-              size="md"
-              type="submit"
-              disabled={isLoading || profileLoading}
-            >
-              {isLoading ? tCommon('loading') : tCommon('save')}
-            </Button>
-          </SectionHeader.Actions>
         </SectionHeader.Group>
       </SectionHeader.Root>
 
