@@ -11,7 +11,7 @@ To enable the avatar upload feature in production, you need to run the following
 
 ### How to Apply Migrations
 
-#### Option 1: Using Supabase Dashboard (Recommended for Production)
+#### Step 1: Add avatar_url Column (SQL Editor)
 
 1. Go to your Supabase Dashboard: https://app.supabase.com
 2. Select your project: `rentaltool`
@@ -19,22 +19,74 @@ To enable the avatar upload feature in production, you need to run the following
 4. Create a new query
 5. Copy the contents of `20251117000001_add_avatar_url_to_profiles.sql`
 6. Paste and click **Run**
-7. Repeat steps 4-6 for `20251117000002_add_avatars_storage_bucket.sql`
+7. You should see: "Success. No rows returned"
 
-#### Option 2: Using Supabase CLI
+#### Step 2: Create Avatars Storage Bucket (Storage UI)
 
-If you have Supabase CLI installed and linked to your project:
+**Why not use SQL?** Storage policies require special permissions that the SQL Editor doesn't have. The UI is the recommended approach.
 
-```bash
-# Make sure you're in the project root
-cd /path/to/rentaltool
+1. In your Supabase Dashboard, navigate to **Storage** in the left sidebar
+2. Click **"New bucket"** button
+3. Configure the bucket:
+   - **Name**: `avatars`
+   - **Public bucket**: ❌ **OFF** (keep it private for security)
+   - **File size limit**: `2 MB` (2097152 bytes)
+   - **Allowed MIME types**: `image/jpeg`, `image/png`, `image/webp`
+4. Click **"Create bucket"**
 
-# Link to your remote project (if not already linked)
-supabase link --project-ref <your-project-ref>
+#### Step 3: Create Storage Policies (Storage UI)
 
-# Push migrations to production
-supabase db push
-```
+1. Still in **Storage**, click on the `avatars` bucket you just created
+2. Go to the **"Policies"** tab at the top
+3. Click **"New Policy"**
+
+**Create 4 policies (repeat for each):**
+
+**Policy 1: SELECT (View)**
+- **Policy name**: `Users can view their own avatars`
+- **Allowed operation**: `SELECT`
+- **Target roles**: `authenticated`
+- **USING expression**:
+  ```sql
+  (bucket_id = 'avatars'::text) AND
+  ((storage.foldername(name))[1] = (auth.uid())::text)
+  ```
+
+**Policy 2: INSERT (Upload)**
+- **Policy name**: `Users can upload their own avatars`
+- **Allowed operation**: `INSERT`
+- **Target roles**: `authenticated`
+- **WITH CHECK expression**:
+  ```sql
+  (bucket_id = 'avatars'::text) AND
+  ((storage.foldername(name))[1] = (auth.uid())::text)
+  ```
+
+**Policy 3: UPDATE (Modify)**
+- **Policy name**: `Users can update their own avatars`
+- **Allowed operation**: `UPDATE`
+- **Target roles**: `authenticated`
+- **USING expression**:
+  ```sql
+  (bucket_id = 'avatars'::text) AND
+  ((storage.foldername(name))[1] = (auth.uid())::text)
+  ```
+
+**Policy 4: DELETE (Remove)**
+- **Policy name**: `Users can delete their own avatars`
+- **Allowed operation**: `DELETE`
+- **Target roles**: `authenticated`
+- **USING expression**:
+  ```sql
+  (bucket_id = 'avatars'::text) AND
+  ((storage.foldername(name))[1] = (auth.uid())::text)
+  ```
+
+#### Quick Summary
+
+1. ✅ **SQL Editor**: Run `20251117000001_add_avatar_url_to_profiles.sql` to add the column
+2. ✅ **Storage UI**: Create `avatars` bucket (private, 2MB limit)
+3. ✅ **Storage Policies**: Create 4 policies (SELECT, INSERT, UPDATE, DELETE)
 
 ### Verification
 
