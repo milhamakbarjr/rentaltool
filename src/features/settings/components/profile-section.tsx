@@ -145,6 +145,7 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
       }
 
       // Update profile using the hook's updateProfile function
+      console.log('Submitting profile update for userId:', userId)
       const result = await updateProfile({
         full_name: data.fullName,
         business_name: data.businessName,
@@ -152,8 +153,14 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
       })
 
       if (result?.error) {
-        throw result.error
+        console.error('Update failed with error:', result.error)
+        const errorMessage = result.error.message || 'Failed to update profile'
+        toast.error(errorMessage)
+        setIsLoading(false)
+        return
       }
+
+      console.log('Profile updated successfully:', result.data)
 
       // Update form with new values
       reset({
@@ -176,7 +183,8 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
       }, 500)
     } catch (error) {
       console.error('Profile update error:', error)
-      toast.error(t('profileError'))
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred'
+      toast.error(`${t('profileError')}: ${errorMsg}`)
     } finally {
       setIsLoading(false)
     }

@@ -62,16 +62,25 @@ export function useUserProfile() {
     if (!user) return { error: new Error('No user logged in') }
 
     try {
+      // Log for debugging
+      console.log('Updating profile for user:', user.id, 'with updates:', updates)
+
       const { data, error: updateError } = await supabase
         .from('profiles')
         .update(updates)
         .eq('id', user.id)
         .select()
-        .single()
+        .maybeSingle()
 
       if (updateError) {
         console.error('Error updating profile:', updateError)
         return { error: updateError }
+      }
+
+      // Check if profile was found and updated
+      if (!data) {
+        console.error('No profile found for user:', user.id)
+        return { error: new Error('Profile not found') }
       }
 
       setProfile(data)
