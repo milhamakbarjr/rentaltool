@@ -21,7 +21,6 @@ import { Button } from '@/components/base/buttons/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
 import { useUserProfile } from '@/hooks/use-user-profile'
 import { resetPassword } from '@/lib/auth/auth'
 import {
@@ -47,7 +46,7 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
   const t = useTranslations('settings')
   const tCommon = useTranslations('common')
   const tAuth = useTranslations('auth')
-  const { profile, loading: profileLoading } = useUserProfile()
+  const { profile, loading: profileLoading, updateProfile } = useUserProfile()
   const [isLoading, setIsLoading] = useState(false)
   const [isResettingPassword, setIsResettingPassword] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
@@ -124,7 +123,6 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
   const onSubmit = async (data: ProfileFormData) => {
     try {
       setIsLoading(true)
-      const supabase = createClient()
 
       let avatarPath = profile?.avatar_url
 
@@ -139,29 +137,43 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
 
         if (!uploadResult.success) {
           toast.error(uploadResult.error || 'Failed to upload avatar')
+          setIsLoading(false)
           return
         }
 
         avatarPath = uploadResult.filePath
       }
 
-      // Update profile
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: data.fullName,
-          business_name: data.businessName,
-          avatar_url: avatarPath,
-        })
-        .eq('id', userId)
+      // Update profile using the hook's updateProfile function
+      const result = await updateProfile({
+        full_name: data.fullName,
+        business_name: data.businessName,
+        avatar_url: avatarPath,
+      })
 
-      if (error) throw error
+      if (result?.error) {
+        throw result.error
+      }
+
+      // Update form with new values
+      reset({
+        fullName: data.fullName,
+        businessName: data.businessName,
+      })
+
+      // Clear selected file and update avatar preview
+      setSelectedFile(null)
+      if (avatarPath) {
+        const signedUrl = await getAvatarSignedUrl(avatarPath)
+        setAvatarPreview(signedUrl)
+      }
 
       toast.success(t('profileUpdated'))
-      setSelectedFile(null)
 
-      // Refresh the page to update the avatar in nav
-      window.location.reload()
+      // Small delay to ensure UI updates, then reload to update nav
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     } catch (error) {
       console.error('Profile update error:', error)
       toast.error(t('profileError'))
