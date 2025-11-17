@@ -18,8 +18,8 @@ import { SectionFooter } from '@/components/application/section-footers/section-
 import { FileUploadDropZone } from '@/components/application/file-upload/file-upload-base'
 import { Avatar } from '@/components/base/avatar/avatar'
 import { Button } from '@/components/base/buttons/button'
-import { TextField, InputBase } from '@/components/base/input/input'
-import { Label } from '@/components/base/input/label'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useUserProfile } from '@/hooks/use-user-profile'
@@ -237,13 +237,17 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
             className="max-lg:hidden"
           />
 
-          <TextField isRequired name="fullName" {...register('fullName')}>
+          <div className="flex flex-col gap-1.5">
             <Label className="lg:hidden">Full name</Label>
-            <InputBase size="md" />
+            <Input
+              placeholder="Enter your full name"
+              required
+              {...register('fullName')}
+            />
             {errors.fullName && (
-              <p className="text-sm text-error">{errors.fullName.message}</p>
+              <p className="text-sm text-red-600">{errors.fullName.message}</p>
             )}
-          </TextField>
+          </div>
         </div>
 
         <hr className="h-px w-full border-none bg-border-secondary" />
@@ -257,13 +261,16 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
             className="max-lg:hidden"
           />
 
-          <TextField name="businessName" {...register('businessName')}>
+          <div className="flex flex-col gap-1.5">
             <Label className="lg:hidden">Business name (optional)</Label>
-            <InputBase size="md" />
+            <Input
+              placeholder="Enter your business name"
+              {...register('businessName')}
+            />
             {errors.businessName && (
-              <p className="text-sm text-error">{errors.businessName.message}</p>
+              <p className="text-sm text-red-600">{errors.businessName.message}</p>
             )}
-          </TextField>
+          </div>
         </div>
 
         <hr className="h-px w-full border-none bg-border-secondary" />
@@ -279,8 +286,8 @@ export function ProfileSection({ userId, userEmail }: ProfileSectionProps) {
 
           <div className="flex flex-col gap-1.5">
             <Label className="lg:hidden">Email address</Label>
-            <InputBase size="md" value={userEmail} disabled />
-            <p className="text-sm text-tertiary">Email cannot be changed</p>
+            <Input value={userEmail} disabled className="bg-gray-50" />
+            <p className="text-sm text-gray-500">Email cannot be changed</p>
           </div>
         </div>
 
